@@ -28,8 +28,8 @@ start-postgres() {
   export PG_JOB
   PG_JOB=$($1)
   # wait for postgres to boot
-  puts-step "sleeping for 90s while postgres is booting..."
-  sleep 90s
+  puts-step "sleeping for 30s while postgres is booting..."
+  sleep 30s
 }
 
 check-postgres() {

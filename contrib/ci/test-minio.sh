@@ -18,13 +18,18 @@ create-postgres-creds
 
 puts-step "creating fake minio credentials"
 
+mkdir -p "${CURRENT_DIR}"/tmp/aws-user
+echo "us-east-1" > "${CURRENT_DIR}"/tmp/aws-user/region
+echo "database-bucket" > "${CURRENT_DIR}"/tmp/aws-user/database-bucket
 echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/accesskey
 echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/secretkey
 
-echo $CURRENT_DIR
 # boot minio
+mkdir -p "${CURRENT_DIR}"/tmp/bin
+echo "ls /home/minio/*/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
 MINIO_JOB=$(docker run -d \
-  -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/minio/user \
+  -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
+  -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds \
   quay.io/drycc/minio:canary server /home/minio/)
 
 # boot postgres, linking the minio container and setting DRYCC_MINIO_SERVICE_HOST and DRYCC_MINIO_SERVICE_PORT
@@ -44,12 +49,12 @@ check-postgres "${PG_JOB}"
 
 # check if minio has the 5 backups
 puts-step "checking if minio has 5 backups"
-BACKUPS="$(docker exec "${MINIO_JOB}" ls /home/minio/dbwal/basebackups_005/ | grep json)"
+BACKUPS="$(docker exec "${MINIO_JOB}" sh /tmp/bin/backups.sh | grep json)"
 NUM_BACKUPS="$(echo "${BACKUPS}" | wc -w)"
 # NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking
 # in the middle of a backup. Instead of failing, let's consider N+1 backups an acceptable case
-if [[ ! "${NUM_BACKUPS}" -eq "5" && ! "${NUM_BACKUPS}" -eq "6" ]]; then
-  puts-error "did not find 5 or 6 base backups. 5 is the default, but 6 may exist if a backup is currently in progress (found $NUM_BACKUPS)"
+if [[ "${NUM_BACKUPS}" -lt "5" ]]; then
+  puts-error "the number of backups is less than 5 (found $NUM_BACKUPS)"
   puts-error "${BACKUPS}"
   exit 1
 fi

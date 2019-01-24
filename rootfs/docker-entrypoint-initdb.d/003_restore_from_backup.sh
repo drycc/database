@@ -3,7 +3,7 @@
 cat << EOF >> "$PGDATA/postgresql.conf"
 wal_level = archive
 archive_mode = on
-archive_command = 'envdir "${WALE_ENVDIR}" wal-e wal-push %p'
+archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
 archive_timeout = 60
 EOF
 
@@ -17,11 +17,12 @@ su-exec postgres pg_ctl -D "$PGDATA" -w restart
 
 # check if there are any backups -- if so, let's restore
 # we could probably do better than just testing number of lines -- one line is just a heading, meaning no backups
-if [[ $(envdir "$WALE_ENVDIR" wal-e --terse backup-list | wc -l) -gt "1" ]]; then
+
+if [[ $(envdir "$WALG_ENVDIR" wal-g backup-list | wc -l) -gt "1" ]]; then
   echo "Found backups. Restoring from backup..."
   su-exec postgres pg_ctl -D "$PGDATA" -w stop
-  rm -rf "$PGDATA/*"
-  envdir "$WALE_ENVDIR" wal-e backup-fetch "$PGDATA" LATEST
+  rm -rf "$PGDATA"
+  envdir "$WALG_ENVDIR" wal-g backup-fetch "$PGDATA" LATEST
   cat << EOF > "$PGDATA/postgresql.conf"
 # These settings are initialized by initdb, but they can be changed.
 log_timezone = 'UTC'
@@ -32,7 +33,7 @@ lc_time = 'C'       # locale for time formatting
 default_text_search_config = 'pg_catalog.english'
 wal_level = archive
 archive_mode = on
-archive_command = 'envdir "${WALE_ENVDIR}" wal-e wal-push %p'
+archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
 archive_timeout = 60
 listen_addresses = '*'
 EOF
@@ -47,7 +48,7 @@ host    all             all             ::1/128                 trust
 host    all             all             0.0.0.0/0               md5
 EOF
   touch "$PGDATA/pg_ident.conf"
-  echo "restore_command = 'envdir /etc/wal-e.d/env wal-e wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
+  echo "restore_command = 'envdir "${WALG_ENVDIR}" wal-g wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
   chown -R postgres:postgres "$PGDATA"
   chmod 0700 "$PGDATA"
   su-exec postgres pg_ctl -D "$PGDATA" \

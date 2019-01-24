@@ -8,8 +8,8 @@ if [[ -f "$PGDATA/recovery.conf" ]] ; then
     sleep 9
 else
     # perform a backup
-    envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
+    envdir "$WALG_ENVDIR" wal-g backup-push "$PGDATA"
     # only retain the latest BACKUPS_TO_RETAIN backups
-    envdir "$WALE_ENVDIR" wal-e delete --confirm retain "$BACKUPS_TO_RETAIN"
+    envdir "$WALG_ENVDIR" wal-g delete --confirm retain "$BACKUPS_TO_RETAIN"
     echo "Backup has been completed."
 fi

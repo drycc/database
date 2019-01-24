@@ -1,40 +1,22 @@
-FROM postgres:9.4-alpine
+FROM minio/mc:RELEASE.2018-11-06T01-12-20Z as mc
 
-ENV WALE_LOG_DESTINATION stderr
-ENV WALE_ENVDIR /etc/wal-e.d/env
-
-RUN mkdir -p $WALE_ENVDIR \
-    && echo 'http://dl-cdn.alpinelinux.org/alpine/v3.5/main' >> /etc/apk/repositories \
-    && apk add --update --virtual .build-deps \
-           git \
-           build-base \
-           libffi-dev \
-           openssl-dev \
-           python3-dev=3.5.6-r0 \
-           linux-headers \
-    && apk add \
-           lzo \
-           pv \
-           util-linux \
-           ca-certificates \
-           python3=3.5.6-r0 \
-    && pip3 install --upgrade pip setuptools \
-    && pip install  --disable-pip-version-check --no-cache-dir \
-           psycopg2-binary==2.7.6.1 \
-           envdir==1.0.1 \
-           wal-e[aws,azure,google,swift]==1.1.0 \
-           gcloud==0.18.3 \
-           oauth2client==4.1.3 \
-           azure-storage==0.20.0 \
-    && apk del .build-deps \
-    && rm -rf /var/cache/apk/*
+FROM postgres:11-alpine
 
 COPY rootfs /
+COPY --from=mc /usr/bin/mc /bin/mc
 
-ARG PATCH_CMD="python3 /patcher-script.py"
-RUN $PATCH_CMD file /bin/create_bucket /patcher-script.d/patch_boto_s3.py
-RUN $PATCH_CMD module wal_e.cmd /patcher-script.d/patch_boto_s3.py
-RUN $PATCH_CMD module wal_e.worker.worker_util /patcher-script.d/patch_wal_e_s3.py
+ENV PGDATA $PGDATA/$PG_MAJOR
+ENV WALG_ENVDIR /etc/wal-g.d/env
+ADD https://github.com/wal-g/wal-g/releases/download/v0.2.4/wal-g.linux-amd64.tar.gz /bin
+
+RUN mkdir -p $WALG_ENVDIR \
+  && tar -xvzf /bin/wal-g.linux-amd64.tar.gz -C /bin && rm /bin/wal-g.linux-amd64.tar.gz \
+  && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk \
+    && apk add --allow-untrusted glibc-2.28-r0.apk \
+    && rm glibc-2.28-r0.apk \
+  && apk add --no-cache jq python3 \
+  && pip3 install --upgrade pip setuptools \
+  && pip install envdir
 
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432
