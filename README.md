@@ -1,8 +1,6 @@
 
 # Drycc Postgres
 
-Drycc - A Fork of Drycc Workflow
-
 [![Build Status](https://travis-ci.org/drycc/postgres.svg?branch=master)](https://travis-ci.org/drycc/postgres)
 [![Docker Repository on Quay](https://quay.io/repository/drycc/postgres/status "Docker Repository on Quay")](https://quay.io/repository/drycc/postgres)
 
