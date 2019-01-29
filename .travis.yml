@@ -2,7 +2,9 @@ sudo: required
 language: go
 services:
   - docker
-script: make docker-build && make test
+script:
+  - make docker-build
+  - make test
 notifications:
   slack:
     rooms:
