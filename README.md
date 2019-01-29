@@ -3,7 +3,7 @@
 
 Drycc - A Fork of Drycc Workflow
 
-[![Build Status](https://ci.drycc.cc/job/postgres/badge/icon)](https://ci.drycc.cc/job/postgres)
+[![Build Status](https://travis-ci.org/drycc/postgres.svg?branch=master)](https://travis-ci.org/drycc/postgres)
 [![Docker Repository on Quay](https://quay.io/repository/drycc/postgres/status "Docker Repository on Quay")](https://quay.io/repository/drycc/postgres)
 
 Drycc (pronounced DAY-iss) Workflow is an open source Platform as a Service (PaaS) that adds a developer-friendly layer to any [Kubernetes](http://kubernetes.io) cluster, making it easy to deploy and manage applications on your own servers.
