@@ -5,6 +5,7 @@ wal_level = archive
 archive_mode = on
 archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
 archive_timeout = 60
+max_connections = 1024
 EOF
 
 # ensure $PGDATA has the right permissions
@@ -36,6 +37,7 @@ archive_mode = on
 archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
 archive_timeout = 60
 listen_addresses = '*'
+max_connections = 1024
 EOF
   cat << EOF > "$PGDATA/pg_hba.conf"
 # "local" is for Unix domain socket connections only
