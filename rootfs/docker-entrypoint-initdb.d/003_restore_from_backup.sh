@@ -1,27 +1,15 @@
 #!/usr/bin/env bash
 
-cat << EOF >> "$PGDATA/postgresql.conf"
-wal_level = archive
-archive_mode = on
-archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
-archive_timeout = 60
-max_connections = 1024
-EOF
-
-# ensure $PGDATA has the right permissions
-chown -R postgres:postgres "$PGDATA"
-chmod 0700 "$PGDATA"
-
-# reboot the server for wal_level to be set before backing up
-echo "Rebooting postgres to enable archive mode"
-su-exec postgres pg_ctl -D "$PGDATA" -w restart
-
 # check if there are any backups -- if so, let's restore
 # we could probably do better than just testing number of lines -- one line is just a heading, meaning no backups
 
 if [[ $(envdir "$WALG_ENVDIR" wal-g backup-list | wc -l) -gt "1" ]]; then
   echo "Found backups. Restoring from backup..."
-  su-exec postgres pg_ctl -D "$PGDATA" -w stop
+  {
+    su-exec postgres pg_ctl -D "$PGDATA" -w stop > /dev/null 2>&1
+  } || {
+    echo "ignore script errors"
+  }
   rm -rf "$PGDATA"
   envdir "$WALG_ENVDIR" wal-g backup-fetch "$PGDATA" LATEST
   cat << EOF > "$PGDATA/postgresql.conf"
@@ -56,6 +44,22 @@ EOF
   su-exec postgres pg_ctl -D "$PGDATA" \
       -o "-c listen_addresses=''" \
       -w start
+else
+  cat << EOF >> "$PGDATA/postgresql.conf"
+wal_level = archive
+archive_mode = on
+archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
+archive_timeout = 60
+max_connections = 1024
+EOF
+
+  # ensure $PGDATA has the right permissions
+  chown -R postgres:postgres "$PGDATA"
+  chmod 0700 "$PGDATA"
+
+  # reboot the server for wal_level to be set before backing up
+  echo "Rebooting postgres to enable archive mode"
+  su-exec postgres pg_ctl -D "$PGDATA" -w restart
 fi
 
 # ensure $PGDATA has the right permissions

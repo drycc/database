@@ -7,7 +7,7 @@ COPY --from=mc /usr/bin/mc /bin/mc
 
 ENV PGDATA $PGDATA/$PG_MAJOR
 ENV WALG_ENVDIR /etc/wal-g.d/env
-ADD https://github.com/wal-g/wal-g/releases/download/v0.2.4/wal-g.linux-amd64.tar.gz /bin
+ADD https://github.com/wal-g/wal-g/releases/download/v0.2.9/wal-g.linux-amd64.tar.gz /bin
 
 RUN mkdir -p $WALG_ENVDIR \
   && tar -xvzf /bin/wal-g.linux-amd64.tar.gz -C /bin && rm /bin/wal-g.linux-amd64.tar.gz \
