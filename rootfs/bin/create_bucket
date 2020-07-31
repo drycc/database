@@ -3,6 +3,6 @@
 # shellcheck disable=SC1091
 source /bin/normalize_storage
 has_bucket=$(mc ls minio -json|jq -r '.key'|grep -w "${MINIO_BUCKET}")
-if  [ ! -n "$has_bucket" ] ;then
+if  [ -z "$has_bucket" ] ;then
     mc mb minio/"${MINIO_BUCKET}"
 fi

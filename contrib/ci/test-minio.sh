@@ -32,6 +32,10 @@ MINIO_JOB=$(docker run -d \
   -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds \
   drycc/minio:v1.0.1 server /home/minio/)
 
+
+puts-step "minio starting, wait 30s."
+sleep 30
+
 # boot postgres, linking the minio container and setting DRYCC_MINIO_SERVICE_HOST and DRYCC_MINIO_SERVICE_PORT
 PG_CMD="docker run -d --link ${MINIO_JOB}:minio -e PGCTLTIMEOUT=1200 \
   -e BACKUP_FREQUENCY=1s -e DATABASE_STORAGE=minio \

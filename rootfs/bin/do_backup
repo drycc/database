@@ -3,7 +3,7 @@
 export BACKUPS_TO_RETAIN=${BACKUPS_TO_RETAIN:-5}
 
 echo "Performing a base backup..."
-if [[ -f "$PGDATA/recovery.conf" ]] ; then
+if [[ -f "$PGDATA/recovery.signal" ]] ; then
     echo "Database is currently recovering from a backup. Aborting"
     sleep 9
 else

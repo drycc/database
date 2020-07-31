@@ -3,7 +3,7 @@
 # fail fast
 set -e
 
-if [[ -f "$PGDATA/recovery.conf" ]]; then
+if [[ -f "$PGDATA/recovery.signal" ]]; then
   # postgres is in recovery mode, so we know it's not ready to accept incoming connections.
   exit 1
 fi

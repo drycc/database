@@ -26,6 +26,7 @@ archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
 archive_timeout = 60
 listen_addresses = '*'
 max_connections = 1024
+restore_command = 'envdir "${WALG_ENVDIR}" wal-g wal-fetch \"%f\" \"%p\"'
 EOF
   cat << EOF > "$PGDATA/pg_hba.conf"
 # "local" is for Unix domain socket connections only
@@ -38,7 +39,7 @@ host    all             all             ::1/128                 trust
 host    all             all             0.0.0.0/0               md5
 EOF
   touch "$PGDATA/pg_ident.conf"
-  echo "restore_command = 'envdir "${WALG_ENVDIR}" wal-g wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
+  touch "$PGDATA/recovery.signal"
   chown -R postgres:postgres "$PGDATA"
   chmod 0700 "$PGDATA"
   su-exec postgres pg_ctl -D "$PGDATA" \
