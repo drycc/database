@@ -12,6 +12,7 @@ if [[ $(envdir "$WALG_ENVDIR" wal-g backup-list | wc -l) -gt "1" ]]; then
   }
   rm -rf "$PGDATA"
   envdir "$WALG_ENVDIR" wal-g backup-fetch "$PGDATA" LATEST
+  touch "$PGDATA/recovery.signal"
   cat << EOF > "$PGDATA/postgresql.conf"
 # These settings are initialized by initdb, but they can be changed.
 log_timezone = 'UTC'
