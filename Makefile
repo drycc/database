@@ -5,6 +5,7 @@
 SHORT_NAME := postgres
 DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 IMAGE_PREFIX ?= drycc
+PLATFORM ?= linux/amd64,linux/arm64
 
 include versioning.mk
 
@@ -24,6 +25,9 @@ all: docker-build docker-push
 docker-build:
 	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
+
+docker-buildx:
+	docker buildx build --platform ${PLATFORM} -t ${IMAGE} . --push
 
 test: test-style test-functional
 
