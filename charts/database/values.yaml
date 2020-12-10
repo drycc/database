@@ -1,7 +1,7 @@
 org: "drycc"
-pull_policy: "Always"
-docker_tag: "canary"
-docker_registry: ""
+image_pull_policy: "Always"
+image_tag: "canary"
+image_registry: ""
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
 # The username and password to be used by the on-cluster database.

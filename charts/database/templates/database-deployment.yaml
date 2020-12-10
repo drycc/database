@@ -6,7 +6,7 @@ metadata:
   labels:
     heritage: drycc
   annotations:
-    component.drycc.cc/version: {{ .Values.docker_tag }}
+    component.drycc.cc/version: {{ .Values.image_tag }}
 spec:
   replicas: 1
   strategy:
@@ -22,8 +22,8 @@ spec:
       serviceAccount: drycc-database
       containers:
         - name: drycc-database
-          image: {{.Values.docker_registry}}{{.Values.org}}/postgres:{{.Values.docker_tag}}
-          imagePullPolicy: {{.Values.pull_policy}}
+          image: {{.Values.image_registry}}{{.Values.org}}/postgres:{{.Values.image_tag}}
+          imagePullPolicy: {{.Values.image_pull_policy}}
           ports:
             - containerPort: 5432
 {{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
