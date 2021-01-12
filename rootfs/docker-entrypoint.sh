@@ -23,7 +23,7 @@ if [ "$1" = 'postgres' ]; then
 
 	# look specifically for PG_VERSION, as it is expected in the DB dir
 	if [ ! -s "$PGDATA/PG_VERSION" ]; then
-		su-exec postgres initdb
+		gosu postgres initdb
 
 		# check password first so we can output the warning before postgres
 		# messes it up
@@ -54,7 +54,7 @@ if [ "$1" = 'postgres' ]; then
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on TCP/IP and waits until start finishes
-		su-exec postgres pg_ctl -D "$PGDATA" \
+		gosu postgres pg_ctl -D "$PGDATA" \
 			-o "-c listen_addresses=''" \
 			-w start
 
@@ -94,7 +94,7 @@ if [ "$1" = 'postgres' ]; then
 			echo
 		done
 
-		su-exec postgres pg_ctl -D "$PGDATA" -m fast -w stop
+		gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
 		set_listen_addresses '*'
 
 		echo
@@ -102,7 +102,7 @@ if [ "$1" = 'postgres' ]; then
 		echo
 	fi
 
-	exec su-exec postgres "$@"
+	exec gosu postgres "$@"
 fi
 
 exec "$@"

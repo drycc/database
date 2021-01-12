@@ -1,9 +1,9 @@
-FROM minio/mc:latest as mc
+FROM docker.io/minio/mc:latest as mc
 
 
-FROM golang:latest as builder
+FROM docker.io/library/golang:latest as builder
 ARG GOBIN=/usr/local/bin
-ARG WAL_G_VERSION=v0.2.15
+ARG WAL_G_VERSION=v0.2.19
 
 RUN apt-get update \
   && apt-get install -y git gcc liblzo2-dev cmake \
@@ -11,10 +11,10 @@ RUN apt-get update \
   && cd $GOPATH/src/github.com/wal-g/wal-g \
   && make install \
   && make deps \
-  && CGO_ENABLE=0 make pg_install
+  && make pg_install
 
 
-FROM postgres:13-alpine
+FROM docker.io/library/postgres:13
 
 COPY rootfs /
 COPY --from=mc /usr/bin/mc /bin/mc
@@ -24,10 +24,12 @@ ENV PGDATA $PGDATA/$PG_MAJOR
 ENV WALG_ENVDIR /etc/wal-g.d/env
 
 RUN mkdir -p $WALG_ENVDIR \
-  && apk add --no-cache jq python3 curl \
-  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-  && python3 get-pip.py \
-  && rm -rf get-pip.py \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    jq \
+    python3 \
+    ca-certificates \
+    python3-pip \
   && pip3 install envdir
 
 CMD ["/docker-entrypoint.sh", "postgres"]

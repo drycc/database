@@ -6,7 +6,7 @@
 if [[ $(envdir "$WALG_ENVDIR" wal-g backup-list | wc -l) -gt "1" ]]; then
   echo "Found backups. Restoring from backup..."
   {
-    su-exec postgres pg_ctl -D "$PGDATA" -w stop > /dev/null 2>&1
+    gosu postgres pg_ctl -D "$PGDATA" -w stop > /dev/null 2>&1
   } || {
     echo "ignore script errors"
   }
@@ -43,7 +43,7 @@ EOF
   touch "$PGDATA/recovery.signal"
   chown -R postgres:postgres "$PGDATA"
   chmod 0700 "$PGDATA"
-  su-exec postgres pg_ctl -D "$PGDATA" \
+  gosu postgres pg_ctl -D "$PGDATA" \
       -o "-c listen_addresses=''" \
       -w start
 else
@@ -61,7 +61,7 @@ EOF
 
   # reboot the server for wal_level to be set before backing up
   echo "Rebooting postgres to enable archive mode"
-  su-exec postgres pg_ctl -D "$PGDATA" -w restart
+  gosu postgres pg_ctl -D "$PGDATA" -w restart
 fi
 
 # ensure $PGDATA has the right permissions
