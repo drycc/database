@@ -4,15 +4,11 @@ image_tag: "canary"
 image_registry: ""
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
+timeout: "1200"
 # The username and password to be used by the on-cluster database.
 # If left empty they will be generated using randAlphaNum
 username: ""
 password: ""
-
+# Configure the following ONLY if using an off-cluster database.
 postgres:
-  name: "database name"
-  username: "database username"
-  password: "database password"
-  host: "database host"
-  port: "database port"
-  timeout: "1200"
+  url: "postgres://USER:PASSWORD@HOST:PORT/NAME"
