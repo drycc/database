@@ -22,7 +22,7 @@ spec:
       serviceAccount: drycc-database
       containers:
         - name: drycc-database
-          image: {{.Values.image_registry}}{{.Values.org}}/postgres:{{.Values.image_tag}}
+          image: {{.Values.image_registry}}/{{.Values.org}}/postgres:{{.Values.image_tag}}
           imagePullPolicy: {{.Values.image_pull_policy}}
           ports:
             - containerPort: 5432
