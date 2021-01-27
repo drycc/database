@@ -3,8 +3,8 @@ language: go
 services:
   - docker
 script:
-  - make docker-build
-  - make test
+  - DEV_REGISTRY="docker.io" make docker-build
+  - DEV_REGISTRY="docker.io" make test
 notifications:
   slack:
     rooms:
