@@ -37,7 +37,8 @@ puts-step "minio starting, wait 30s."
 sleep 30
 
 # boot postgres, linking the minio container and setting DRYCC_MINIO_SERVICE_HOST and DRYCC_MINIO_SERVICE_PORT
-PG_CMD="docker run -d --link ${MINIO_JOB}:minio -e PGCTLTIMEOUT=1200 \
+MINIO_IP=$(docker inspect --format "{{ .NetworkSettings.IPAddress }}" "${MINIO_JOB}")
+PG_CMD="docker run -d --add-host minio:${MINIO_IP} -e PGCTLTIMEOUT=1200 \
   -e BACKUP_FREQUENCY=1s -e DATABASE_STORAGE=minio \
   -e DRYCC_MINIO_SERVICE_HOST=minio -e DRYCC_MINIO_SERVICE_PORT=9000 \
   -v ${CURRENT_DIR}/tmp/creds:/var/run/secrets/drycc/database/creds \
