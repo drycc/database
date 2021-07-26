@@ -9,6 +9,3 @@ timeout: "1200"
 # If left empty they will be generated using randAlphaNum
 username: ""
 password: ""
-# Configure the following ONLY if using an off-cluster database.
-postgres:
-  url: "postgres://USER:PASSWORD@HOST:PORT/NAME"
