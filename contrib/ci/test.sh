@@ -22,6 +22,8 @@ create-postgres-creds() {
   mkdir -p "${CURRENT_DIR}"/tmp/creds
   echo "testuser" > "${CURRENT_DIR}"/tmp/creds/user
   echo "icanttellyou" > "${CURRENT_DIR}"/tmp/creds/password
+  echo "drycc_controller" > "${CURRENT_DIR}"/tmp/creds/controller-database-name
+  echo "drycc_passport" > "${CURRENT_DIR}"/tmp/creds/passport-database-name
 }
 
 start-postgres() {

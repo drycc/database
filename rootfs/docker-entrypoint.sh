@@ -12,6 +12,8 @@ set_listen_addresses() {
 
 POSTGRES_USER="$(cat /var/run/secrets/drycc/database/creds/user)"
 POSTGRES_PASSWORD="$(cat /var/run/secrets/drycc/database/creds/password)"
+POSTGRES_CONTROLLER="$(cat /var/run/secrets/drycc/database/creds/controller-database-name)"
+POSTGRES_PASSPORT="$(cat /var/run/secrets/drycc/database/creds/passport-database-name)"
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PGDATA"
@@ -59,12 +61,18 @@ if [ "$1" = 'postgres' ]; then
 			-w start
 
 		: ${POSTGRES_USER:=postgres}
-		: ${POSTGRES_DB:=$POSTGRES_USER}
-		export POSTGRES_USER POSTGRES_DB
+		export POSTGRES_USER
 
-		if [ "$POSTGRES_DB" != 'postgres' ]; then
+		if [ "$POSTGRES_CONTROLLER" != '' ]; then
 			psql --username postgres <<-EOSQL
-				CREATE DATABASE "$POSTGRES_DB" ;
+				CREATE DATABASE "$POSTGRES_CONTROLLER" ;
+			EOSQL
+			echo
+		fi
+
+		if [ "$POSTGRES_PASSPORT" != '' ]; then
+			psql --username postgres <<-EOSQL
+				CREATE DATABASE "$POSTGRES_PASSPORT" ;
 			EOSQL
 			echo
 		fi
