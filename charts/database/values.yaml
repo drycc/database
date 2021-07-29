@@ -9,3 +9,5 @@ timeout: "1200"
 # If left empty they will be generated using randAlphaNum
 username: ""
 password: ""
+controller_database_name: "drycc_controller"
+passport_database_name: "drycc_passport"
