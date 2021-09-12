@@ -20,6 +20,15 @@ spec:
         app: drycc-database
     spec:
       serviceAccount: drycc-database
+      initContainers:
+      - name: drycc-database-init
+        image: docker.io/drycc/python-dev:latest
+        imagePullPolicy: {{.Values.image_pull_policy}}
+        command:
+          - netcat
+          - -v
+          - -a
+          - $(DRYCC_MINIO_SERVICE_HOST):$(DRYCC_MINIO_SERVICE_PORT)
       containers:
         - name: drycc-database
           image: {{.Values.image_registry}}/{{.Values.image_org}}/postgres:{{.Values.image_tag}}
