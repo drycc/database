@@ -1,9 +1,9 @@
 FROM docker.io/minio/mc:latest as mc
 
 
-FROM docker.io/library/golang:latest as builder
+FROM docker.io/library/golang:buster as builder
 ARG GOBIN=/usr/local/bin
-ARG WAL_G_VERSION=v0.2.19
+ARG WAL_G_VERSION=v1.1
 
 RUN apt-get update \
   && apt-get install -y git gcc liblzo2-dev cmake \
@@ -14,7 +14,7 @@ RUN apt-get update \
   && make pg_install
 
 
-FROM docker.io/library/postgres:13
+FROM docker.io/library/postgres:13-buster
 
 COPY rootfs /
 COPY --from=mc /usr/bin/mc /bin/mc
