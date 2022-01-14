@@ -1,4 +1,4 @@
-{{- if eq .Values.global.database_location "on-cluster" }}
+{{- if eq .Values.global.databaseLocation "on-cluster" }}
 apiVersion: v1
 kind: Service
 metadata:

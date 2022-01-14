@@ -1,4 +1,4 @@
-{{- if eq .Values.global.database_location "on-cluster" }}
+{{- if eq .Values.global.databaseLocation "on-cluster" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
     heritage: drycc
   annotations:
-    component.drycc.cc/version: {{ .Values.image_tag }}
+    component.drycc.cc/version: {{ .Values.imageTag }}
 spec:
   replicas: 1
   strategy:
@@ -23,7 +23,7 @@ spec:
       initContainers:
       - name: drycc-database-init
         image: docker.io/drycc/python-dev:latest
-        imagePullPolicy: {{.Values.image_pull_policy}}
+        imagePullPolicy: {{.Values.imagePullPolicy}}
         command:
           - netcat
           - -v
@@ -31,18 +31,18 @@ spec:
           - $(DRYCC_MINIO_SERVICE_HOST):$(DRYCC_MINIO_SERVICE_PORT)
       containers:
         - name: drycc-database
-          image: {{.Values.image_registry}}/{{.Values.image_org}}/postgres:{{.Values.image_tag}}
-          imagePullPolicy: {{.Values.image_pull_policy}}
+          image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}
+          imagePullPolicy: {{.Values.imagePullPolicy}}
           ports:
             - containerPort: 5432
-{{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
+{{- if or (.Values.limitsCpu) (.Values.limitsMemory)}}
           resources:
             limits:
-{{- if (.Values.limits_cpu) }}
-              cpu: {{.Values.limits_cpu}}
+{{- if (.Values.limitsCpu) }}
+              cpu: {{.Values.limitsCpu}}
 {{- end}}
-{{- if (.Values.limits_memory) }}
-              memory: {{.Values.limits_memory}}
+{{- if (.Values.limitsMemory) }}
+              memory: {{.Values.limitsMemory}}
 {{- end}}
 {{- end}}
           env:
