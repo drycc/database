@@ -21,6 +21,7 @@ lc_monetary = 'C'     # locale for monetary formatting
 lc_numeric = 'C'      # locale for number formatting
 lc_time = 'C'       # locale for time formatting
 default_text_search_config = 'pg_catalog.english'
+huge_pages = try
 wal_level = archive
 archive_mode = on
 archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'
@@ -48,6 +49,7 @@ EOF
       -w start
 else
   cat << EOF >> "$PGDATA/postgresql.conf"
+huge_pages = try
 wal_level = archive
 archive_mode = on
 archive_command = 'envdir "${WALG_ENVDIR}" wal-g wal-push %p'

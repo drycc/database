@@ -14,7 +14,7 @@ RUN apt-get update \
   && make pg_install
 
 
-FROM docker.io/library/postgres:13-buster
+FROM docker.io/library/postgres:14-bullseye
 
 COPY rootfs /
 COPY --from=mc /usr/bin/mc /bin/mc
@@ -23,7 +23,8 @@ COPY --from=builder /usr/local/bin/wal-g  /bin/wal-g
 ENV PGDATA $PGDATA/$PG_MAJOR
 ENV WALG_ENVDIR /etc/wal-g.d/env
 
-RUN mkdir -p $WALG_ENVDIR \
+RUN sed -i -r 's/#huge_pages.*?/huge_pages = try/g' /usr/share/postgresql/postgresql.conf.sample \
+  && mkdir -p $WALG_ENVDIR \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     jq \
