@@ -23,15 +23,15 @@ COPY --from=builder /usr/local/bin/wal-g  /bin/wal-g
 ENV PGDATA $PGDATA/$PG_MAJOR
 ENV WALG_ENVDIR /etc/wal-g.d/env
 
-RUN sed -i -r 's/#huge_pages.*?/huge_pages = try/g' /usr/share/postgresql/postgresql.conf.sample \
-  && mkdir -p $WALG_ENVDIR \
+RUN mkdir -p $WALG_ENVDIR \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     jq \
     python3 \
     ca-certificates \
     python3-pip \
-  && pip3 install envdir
+  && pip3 install envdir \
+  && sed -i -r 's/#huge_pages.*?/huge_pages = off/g' /usr/share/postgresql/postgresql.conf.sample
 
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432
