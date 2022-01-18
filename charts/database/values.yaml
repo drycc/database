@@ -4,6 +4,8 @@ imageTag: "canary"
 imageRegistry: "docker.io"
 # limitsCpu: "100m"
 # limitsMemory: "50Mi"
+# limitsHugepages2Mi: 100Mi
+# limitsHugepages1Gi: 2Gi
 timeout: "1200"
 # The username and password to be used by the on-cluster database.
 # If left empty they will be generated using randAlphaNum

@@ -30,8 +30,7 @@ RUN mkdir -p $WALG_ENVDIR \
     python3 \
     ca-certificates \
     python3-pip \
-  && pip3 install envdir \
-  && sed -i -r 's/#huge_pages.*?/huge_pages = off/g' /usr/share/postgresql/postgresql.conf.sample
+  && pip3 install envdir
 
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432

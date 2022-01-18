@@ -26,7 +26,6 @@ if [ "$1" = 'postgres' ]; then
 	# look specifically for PG_VERSION, as it is expected in the DB dir
 	if [ ! -s "$PGDATA/PG_VERSION" ]; then
 		gosu postgres initdb
-
 		# check password first so we can output the warning before postgres
 		# messes it up
 		if [ "$POSTGRES_PASSWORD" ]; then

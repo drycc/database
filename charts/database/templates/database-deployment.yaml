@@ -35,16 +35,22 @@ spec:
           imagePullPolicy: {{.Values.imagePullPolicy}}
           ports:
             - containerPort: 5432
-{{- if or (.Values.limitsCpu) (.Values.limitsMemory)}}
+          {{- if or (.Values.limitsCpu) (.Values.limitsMemory)}}
           resources:
             limits:
-{{- if (.Values.limitsCpu) }}
+              {{- if (.Values.limitsCpu) }}
               cpu: {{.Values.limitsCpu}}
-{{- end}}
-{{- if (.Values.limitsMemory) }}
+              {{- end}}
+              {{- if (.Values.limitsMemory) }}
               memory: {{.Values.limitsMemory}}
-{{- end}}
-{{- end}}
+              {{- end}}
+              {{- if (.Values.limitsHugepages2Mi) }}
+              hugepages-2Mi: {{.Values.limitsHugepages2Mi}}
+              {{- end}}
+              {{- if (.Values.limitsHugepages1Gi) }}
+              hugepages-1Gi: {{.Values.limitsHugepages1Gi}}
+              {{- end}}
+          {{- end}}
           env:
             - name: DATABASE_STORAGE
               value: "{{.Values.global.storage}}"
