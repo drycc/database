@@ -74,7 +74,16 @@ spec:
               mountPath: /var/run/secrets/drycc/database/creds
             - name: objectstore-creds
               mountPath: /var/run/secrets/drycc/objectstore/creds
+            {{- if .Values.persistence.enabled }}
+            - name: database-data
+              mountPath: /var/lib/postgresql
+            {{- end }}
       volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: database-data
+          persistentVolumeClaim:
+            claimName: drycc-database
+        {{- end }}
         - name: database-creds
           secret:
             secretName: database-creds
