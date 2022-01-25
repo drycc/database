@@ -7,6 +7,10 @@ imageRegistry: "docker.io"
 # limitsHugepages2Mi: 100Mi
 # limitsHugepages1Gi: 2Gi
 timeout: "1200"
+# Service
+service:
+  # Provide any additional service annotations
+  annotations: {}
 # GCP PDs and EBS volumes are supported only
 persistence:
   enabled: false # Set to true to enable persistence
