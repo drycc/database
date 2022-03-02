@@ -1,36 +1,44 @@
-FROM docker.io/minio/mc:latest as mc
+FROM docker.io/drycc/base:bullseye
 
-
-FROM docker.io/library/golang:buster as builder
-ARG GOBIN=/usr/local/bin
-ARG WAL_G_VERSION=v1.1
-
-RUN apt-get update \
-  && apt-get install -y git gcc liblzo2-dev cmake \
-  && git clone --dept 1 -b $WAL_G_VERSION https://github.com/wal-g/wal-g $GOPATH/src/github.com/wal-g/wal-g \
-  && cd $GOPATH/src/github.com/wal-g/wal-g \
-  && make install \
-  && make deps \
-  && make pg_install
-
-
-FROM docker.io/library/postgres:14-bullseye
-
-COPY rootfs /
-COPY --from=mc /usr/bin/mc /bin/mc
-COPY --from=builder /usr/local/bin/wal-g  /bin/wal-g
-
-ENV PGDATA $PGDATA/$PG_MAJOR
+ENV PGDATA /opt/drycc/postgresql/14/data
 ENV WALG_ENVDIR /etc/wal-g.d/env
 
-RUN mkdir -p $WALG_ENVDIR \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
-    jq \
-    python3 \
-    ca-certificates \
-    python3-pip \
-  && pip3 install envdir
+COPY rootfs/bin /bin/
+COPY rootfs/docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/
+COPY rootfs/docker-entrypoint.sh /docker-entrypoint.sh
+ENV JQ_VERSION="1.6" \
+  GOSU_VERSION="1.14" \
+  MC_VERSION="2022.02.26.03.58.31" \
+  WAL_G_VERSION="1.1" \
+  PYTHON_VERSION="3.10.2" \
+  POSTGRESQL_VERSION="14.2"
 
+RUN mkdir -p $WALG_ENVDIR \
+  && install-stack jq $JQ_VERSION \
+  && install-stack gosu $GOSU_VERSION \
+  && install-stack mc $MC_VERSION \
+  && install-stack wal-g $WAL_G_VERSION \
+  && install-stack python $PYTHON_VERSION \
+  && install-stack postgresql $POSTGRESQL_VERSION && . init-stack \
+  && rm -rf \
+      /usr/share/doc \
+      /usr/share/man \
+      /usr/share/info \
+      /usr/share/locale \
+      /var/lib/apt/lists/* \
+      /var/log/* \
+      /var/cache/debconf/* \
+      /etc/systemd \
+      /lib/lsb \
+      /lib/udev \
+      /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/IBM* \
+      /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/EBC* \
+  && mkdir -p /usr/share/man/man{1..8} \
+  && mkdir -p /run/postgresql $PGDATA \
+  && groupadd postgres && useradd -g postgres postgres \
+  && chown -R postgres:postgres /run/postgresql $PGDATA \
+  && set -eux; pip3 install --disable-pip-version-check --no-cache-dir envdir 2>/dev/null
+
+ENTRYPOINT ["init-stack"]
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432

@@ -41,5 +41,5 @@ check-postgres() {
 
   # check if postgres is running
   puts-step "checking if postgres is running"
-  docker exec "$1" is_running
+  docker exec "$1" init-stack is_running
 }
