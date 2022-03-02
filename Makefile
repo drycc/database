@@ -14,7 +14,7 @@ SHELL_SCRIPTS = $(wildcard _scripts/*.sh contrib/ci/*.sh rootfs/bin/*)
 # The following variables describe the containerized development environment
 # and other build options
 DEV_ENV_IMAGE := ${DEV_REGISTRY}/drycc/go-dev
-DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
+DEV_ENV_WORK_DIR := /opt/drycc/go/src/${REPO_PATH}
 DEV_ENV_CMD := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${DEV_ENV_IMAGE}
 DEV_ENV_CMD_INT := docker run -it --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${DEV_ENV_IMAGE}
 
