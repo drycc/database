@@ -26,7 +26,7 @@ echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/
 
 # boot minio
 mkdir -p "${CURRENT_DIR}"/tmp/bin
-echo "ls /data/*/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
+echo "ls /data/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
 MINIO_JOB=$(docker run -d \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
   -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds \
