@@ -39,6 +39,6 @@ RUN mkdir -p $WALG_ENVDIR \
   && chown -R postgres:postgres /run/postgresql $PGDATA \
   && set -eux; pip3 install --disable-pip-version-check --no-cache-dir envdir 2>/dev/null
 
-ENTRYPOINT ["init-stack"]
-CMD ["/docker-entrypoint.sh", "postgres"]
+ENTRYPOINT ["init-stack", "/docker-entrypoint.sh"]
+CMD ["postgres"]
 EXPOSE 5432
