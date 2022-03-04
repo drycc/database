@@ -24,7 +24,7 @@ spec:
       - name: drycc-database-init
         image: docker.io/drycc/python-dev:latest
         imagePullPolicy: {{.Values.imagePullPolicy}}
-        command:
+        args:
           - netcat
           - -v
           - -a
@@ -60,12 +60,14 @@ spec:
             preStop:
               exec:
                 command:
+                  - init-stack
                   - gosu
                   - postgres
                   - do_backup
           readinessProbe:
             exec:
               command:
+                - init-stack
                 - is_running
             initialDelaySeconds: 30
             timeoutSeconds: 1
@@ -76,7 +78,7 @@ spec:
               mountPath: /var/run/secrets/drycc/objectstore/creds
             {{- if .Values.persistence.enabled }}
             - name: database-data
-              mountPath: /var/lib/postgresql
+              mountPath: /data
             {{- end }}
       volumes:
         {{- if .Values.persistence.enabled }}

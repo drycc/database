@@ -26,12 +26,11 @@ echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/
 
 # boot minio
 mkdir -p "${CURRENT_DIR}"/tmp/bin
-echo "ls /data/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
+echo "ls /data/database-bucket/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
 MINIO_JOB=$(docker run -d \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
   -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds \
   drycc/minio:canary server /data/)
-
 
 puts-step "minio starting, wait 30s."
 sleep 30
@@ -55,6 +54,7 @@ check-postgres "${PG_JOB}"
 # check if minio has the 5 backups
 puts-step "checking if minio has 5 backups"
 BACKUPS="$(docker exec "${MINIO_JOB}" sh /tmp/bin/backups.sh | grep json)"
+
 NUM_BACKUPS="$(echo "${BACKUPS}" | wc -w)"
 # NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking
 # in the middle of a backup. Instead of failing, let's consider N+1 backups an acceptable case

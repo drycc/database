@@ -1,8 +1,5 @@
 FROM docker.io/drycc/base:bullseye
 
-ENV PGDATA /opt/drycc/postgresql/14/data
-ENV WALG_ENVDIR /etc/wal-g.d/env
-
 COPY rootfs/bin /bin/
 COPY rootfs/docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/
 COPY rootfs/docker-entrypoint.sh /docker-entrypoint.sh
@@ -11,7 +8,12 @@ ENV JQ_VERSION="1.6" \
   MC_VERSION="2022.02.26.03.58.31" \
   WAL_G_VERSION="1.1" \
   PYTHON_VERSION="3.10.2" \
+  PG_MAJOR=14 \
   POSTGRESQL_VERSION="14.2"
+
+
+ENV PGDATA /data/${PG_MAJOR}
+ENV WALG_ENVDIR /etc/wal-g.d/env
 
 RUN mkdir -p $WALG_ENVDIR \
   && install-stack jq $JQ_VERSION \
