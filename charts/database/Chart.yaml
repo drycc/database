@@ -1,4 +1,9 @@
 name: database
+apiVersion: v2
+dependencies:
+  - name: common
+    repository: https://charts.drycc.cc/stable
+    version: 1.x.x
 home: https://github.com/drycc/postgres
 version: v1.0.0
 description: A PostgreSQL database used by Drycc Workflow.

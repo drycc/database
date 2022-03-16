@@ -19,6 +19,7 @@ spec:
       labels:
         app: drycc-database
     spec:
+      {{- include "common.affinities.nodes.soft" (dict "key" "app" "values" (list "drycc-database")) | indent 6 }}
       serviceAccount: drycc-database
       initContainers:
       - name: drycc-database-init
