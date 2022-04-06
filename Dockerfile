@@ -5,9 +5,9 @@ COPY rootfs/docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/
 COPY rootfs/docker-entrypoint.sh /docker-entrypoint.sh
 ENV JQ_VERSION="1.6" \
   GOSU_VERSION="1.14" \
-  MC_VERSION="2022.02.26.03.58.31" \
+  MC_VERSION="2022.04.01.23.44.48" \
   WAL_G_VERSION="1.1" \
-  PYTHON_VERSION="3.10.2" \
+  PYTHON_VERSION="3.10.4" \
   PG_MAJOR=14 \
   POSTGRESQL_VERSION="14.2"
 
