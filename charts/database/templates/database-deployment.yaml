@@ -23,7 +23,7 @@ spec:
       serviceAccount: drycc-database
       initContainers:
       - name: drycc-database-init
-        image: docker.io/drycc/python-dev:latest
+        image: registry.drycc.cc/drycc/python-dev:latest
         imagePullPolicy: {{.Values.imagePullPolicy}}
         args:
           - netcat

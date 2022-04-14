@@ -1,4 +1,4 @@
-FROM docker.io/drycc/base:bullseye
+FROM registry.drycc.cc/drycc/base:bullseye
 
 COPY rootfs/bin /bin/
 COPY rootfs/docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/
