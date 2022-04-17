@@ -12,8 +12,6 @@ set_listen_addresses() {
 
 POSTGRES_USER="$(cat /var/run/secrets/drycc/database/creds/user)"
 POSTGRES_PASSWORD="$(cat /var/run/secrets/drycc/database/creds/password)"
-POSTGRES_CONTROLLER="$(cat /var/run/secrets/drycc/database/creds/controller-database-name)"
-POSTGRES_PASSPORT="$(cat /var/run/secrets/drycc/database/creds/passport-database-name)"
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PGDATA"
@@ -62,20 +60,6 @@ if [ "$1" = 'postgres' ]; then
 		: ${POSTGRES_USER:=postgres}
 		export POSTGRES_USER
 
-		if [ "$POSTGRES_CONTROLLER" != '' ]; then
-			psql --username postgres <<-EOSQL
-				CREATE DATABASE "$POSTGRES_CONTROLLER" ;
-			EOSQL
-			echo
-		fi
-
-		if [ "$POSTGRES_PASSPORT" != '' ]; then
-			psql --username postgres <<-EOSQL
-				CREATE DATABASE "$POSTGRES_PASSPORT" ;
-			EOSQL
-			echo
-		fi
-
 		if [ "$POSTGRES_USER" = 'postgres' ]; then
 			op='ALTER'
 		else
@@ -87,7 +71,13 @@ if [ "$1" = 'postgres' ]; then
 		EOSQL
 		echo
 
+		# Initialize the passport and controller databases
+		psql --username postgres <<-EOSQL
+			CREATE DATABASE passport;
+			CREATE DATABASE controller;
+		EOSQL
 		echo
+
 		for f in /docker-entrypoint-initdb.d/*; do
 			case "$f" in
 				*.sh)  echo "$0: running $f"; . "$f" ;;
