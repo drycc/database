@@ -29,68 +29,50 @@ spec:
           - netcat
           - -v
           - -a
-          - $(DRYCC_MINIO_SERVICE_HOST):$(DRYCC_MINIO_SERVICE_PORT)
+          - $(DRYCC_MINIO_ENDPOINT)
+        {{- include "builder.envs" . | indent 8 }}
       containers:
-        - name: drycc-database
-          image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}
-          imagePullPolicy: {{.Values.imagePullPolicy}}
-          ports:
-            - containerPort: 5432
-          {{- if or (.Values.limitsCpu) (.Values.limitsMemory)}}
-          resources:
-            limits:
-              {{- if (.Values.limitsCpu) }}
-              cpu: {{.Values.limitsCpu}}
-              {{- end}}
-              {{- if (.Values.limitsMemory) }}
-              memory: {{.Values.limitsMemory}}
-              {{- end}}
-              {{- if (.Values.limitsHugepages2Mi) }}
-              hugepages-2Mi: {{.Values.limitsHugepages2Mi}}
-              {{- end}}
-              {{- if (.Values.limitsHugepages1Gi) }}
-              hugepages-1Gi: {{.Values.limitsHugepages1Gi}}
-              {{- end}}
-          {{- end}}
-          env:
-            - name: DATABASE_STORAGE
-              value: "{{.Values.global.storage}}"
-            - name: PGCTLTIMEOUT
-              value: "{{.Values.timeout}}"
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - init-stack
-                  - gosu
-                  - postgres
-                  - do_backup
-          readinessProbe:
+      - name: drycc-database
+        image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}
+        imagePullPolicy: {{.Values.imagePullPolicy}}
+        ports:
+        - containerPort: 5432
+        {{- include "builder.limits" . | indent 8 }}
+        {{- include "builder.envs" . | indent 8 }}
+        lifecycle:
+          preStop:
             exec:
               command:
-                - init-stack
-                - is_running
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-          volumeMounts:
-            - name: database-creds
-              mountPath: /var/run/secrets/drycc/database/creds
-            - name: objectstore-creds
-              mountPath: /var/run/secrets/drycc/objectstore/creds
-            {{- if .Values.persistence.enabled }}
-            - name: database-data
-              mountPath: /data
-            {{- end }}
-      volumes:
+              - init-stack
+              - gosu
+              - postgres
+              - do_backup
+        readinessProbe:
+          exec:
+            command:
+            - init-stack
+            - is_running
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: database-creds
+          mountPath: /var/run/secrets/drycc/database/creds
+        - name: minio-creds
+          mountPath: /var/run/secrets/drycc/minio/creds
         {{- if .Values.persistence.enabled }}
         - name: database-data
-          persistentVolumeClaim:
-            claimName: drycc-database
+          mountPath: /data
         {{- end }}
-        - name: database-creds
-          secret:
-            secretName: database-creds
-        - name: objectstore-creds
-          secret:
-            secretName: objectstorage-keyfile
+      volumes:
+      {{- if .Values.persistence.enabled }}
+      - name: database-data
+        persistentVolumeClaim:
+          claimName: drycc-database
+      {{- end }}
+      - name: database-creds
+        secret:
+          secretName: database-creds
+      - name: minio-creds
+        secret:
+          secretName: minio-creds
 {{- end }}

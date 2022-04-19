@@ -1,11 +1,13 @@
 #!/usr/bin/env sh
-BUCKET_FILE="/var/run/secrets/drycc/objectstore/creds/database-bucket"
-ACCESS_KEY_FILE="/var/run/secrets/drycc/objectstore/creds/accesskey"
-SECRET_KEY_FILE="/var/run/secrets/drycc/objectstore/creds/secretkey"
+BUCKET_FILE="/var/run/secrets/drycc/minio/creds/database-bucket"
+ACCESS_KEY_FILE="/var/run/secrets/drycc/minio/creds/accesskey"
+SECRET_KEY_FILE="/var/run/secrets/drycc/minio/creds/secretkey"
 
 if [ -f $BUCKET_FILE ]; then
   MINIO_BUCKET=$(cat "$BUCKET_FILE")
   export MINIO_BUCKET
+else
+  export MINIO_BUCKET="database"
 fi
 if [ -f $ACCESS_KEY_FILE ]; then
   MINIO_ACCESS_KEY=$(cat "$ACCESS_KEY_FILE")
@@ -16,6 +18,6 @@ if [ -f $SECRET_KEY_FILE ]; then
   export MINIO_SECRET_KEY
 fi
 
-export MINIO_ENDPOINT=http://"${DRYCC_MINIO_SERVICE_HOST}:${DRYCC_MINIO_SERVICE_PORT}"
+export MINIO_ENDPOINT=http://"${DRYCC_MINIO_ENDPOINT}"
 
 mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}"

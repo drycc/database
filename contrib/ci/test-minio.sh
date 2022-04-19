@@ -29,19 +29,19 @@ mkdir -p "${CURRENT_DIR}"/tmp/bin
 echo "ls /data/database-bucket/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
 MINIO_JOB=$(docker run -d \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
-  -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds \
-  drycc/minio:canary server /data/)
+  -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/minio/creds \
+  "${DEV_REGISTRY}"/drycc/minio:canary server /data/)
 
 puts-step "minio starting, wait 30s."
 sleep 30
 
-# boot postgres, linking the minio container and setting DRYCC_MINIO_SERVICE_HOST and DRYCC_MINIO_SERVICE_PORT
+# boot postgres, linking the minio container and setting DRYCC_MINIO_ENDPOINT
 MINIO_IP=$(docker inspect --format "{{ .NetworkSettings.IPAddress }}" "${MINIO_JOB}")
 PG_CMD="docker run -d --add-host minio:${MINIO_IP} -e PGCTLTIMEOUT=1200 \
   -e BACKUP_FREQUENCY=1s -e DATABASE_STORAGE=minio \
-  -e DRYCC_MINIO_SERVICE_HOST=minio -e DRYCC_MINIO_SERVICE_PORT=9000 \
+  -e DRYCC_MINIO_ENDPOINT=minio:9000 \
   -v ${CURRENT_DIR}/tmp/creds:/var/run/secrets/drycc/database/creds \
-  -v ${CURRENT_DIR}/tmp/aws-user:/var/run/secrets/drycc/objectstore/creds $1"
+  -v ${CURRENT_DIR}/tmp/aws-user:/var/run/secrets/drycc/minio/creds $1"
 
 start-postgres "${PG_CMD}"
 
