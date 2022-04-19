@@ -20,4 +20,4 @@ fi
 
 export MINIO_ENDPOINT=http://"${DRYCC_MINIO_ENDPOINT}"
 
-mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}"
+mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}" --api s3v4
