@@ -10,8 +10,8 @@ set_listen_addresses() {
 	sed -ri "s/^#?(listen_addresses\s*=\s*)\S+/\1'$sedEscapedValue'/" "$PGDATA/postgresql.conf"
 }
 
-POSTGRES_USER="$(cat /var/run/secrets/drycc/database/creds/user)"
-POSTGRES_PASSWORD="$(cat /var/run/secrets/drycc/database/creds/password)"
+POSTGRES_USER="${DRYCC_DATABASE_USER}"
+POSTGRES_PASSWORD="${DRYCC_DATABASE_PASSWORD}"
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PGDATA"

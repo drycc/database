@@ -28,17 +28,17 @@ spec:
         args:
           - netcat
           - -v
-          - -a
+          - -u
           - $(DRYCC_MINIO_ENDPOINT)
-        {{- include "builder.envs" . | indent 8 }}
+        {{- include "database.envs" . | indent 8 }}
       containers:
       - name: drycc-database
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}
         imagePullPolicy: {{.Values.imagePullPolicy}}
         ports:
         - containerPort: 5432
-        {{- include "builder.limits" . | indent 8 }}
-        {{- include "builder.envs" . | indent 8 }}
+        {{- include "database.limits" . | indent 8 }}
+        {{- include "database.envs" . | indent 8 }}
         lifecycle:
           preStop:
             exec:
@@ -54,25 +54,13 @@ spec:
             - is_running
           initialDelaySeconds: 30
           timeoutSeconds: 1
+      {{- if .Values.persistence.enabled }}
         volumeMounts:
-        - name: database-creds
-          mountPath: /var/run/secrets/drycc/database/creds
-        - name: minio-creds
-          mountPath: /var/run/secrets/drycc/minio/creds
-        {{- if .Values.persistence.enabled }}
         - name: database-data
           mountPath: /data
-        {{- end }}
       volumes:
-      {{- if .Values.persistence.enabled }}
       - name: database-data
         persistentVolumeClaim:
           claimName: drycc-database
       {{- end }}
-      - name: database-creds
-        secret:
-          secretName: database-creds
-      - name: minio-creds
-        secret:
-          secretName: minio-creds
 {{- end }}

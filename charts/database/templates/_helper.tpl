@@ -1,16 +1,44 @@
-{{- define "database.envs" -}}
+{{- define "database.envs" }}
 env:
 - name: DATABASE_STORAGE
   value: "{{.Values.global.storage}}"
 - name: PGCTLTIMEOUT
   value: "{{.Values.timeout}}"
-{{- if eq .Values.global.minioLocation "on-cluster" }}
+- name: "DRYCC_DATABASE_USER"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: user
+- name: "DRYCC_DATABASE_PASSWORD"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: password
+- name: "DRYCC_MINIO_LOOKUP"
+  valueFrom:
+    secretKeyRef:
+      name: minio-creds
+      key: lookup
+- name: "DRYCC_MINIO_BUCKET"
+  valueFrom:
+    secretKeyRef:
+      name: minio-creds
+      key: database-bucket
 - name: "DRYCC_MINIO_ENDPOINT"
-  value: ${DRYCC_MINIO_SERVICE_HOST}:${DRYCC_MINIO_SERVICE_PORT}
-{{- else }}
-- name: "DRYCC_MINIO_ENDPOINT"
-  value: "{{ .Values.minio.endpoint }}"
-{{- end }}
+  valueFrom:
+    secretKeyRef:
+      name: minio-creds
+      key: endpoint
+- name: "DRYCC_MINIO_ACCESSKEY"
+  valueFrom:
+    secretKeyRef:
+      name: minio-creds
+      key: accesskey
+- name: "DRYCC_MINIO_SECRETKEY"
+  valueFrom:
+    secretKeyRef:
+      name: minio-creds
+      key: secretkey
 {{- end }}
 
 {{/* Generate database deployment limits */}}

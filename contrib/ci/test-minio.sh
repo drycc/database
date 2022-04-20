@@ -18,18 +18,15 @@ create-postgres-creds
 
 puts-step "creating fake minio credentials"
 
-mkdir -p "${CURRENT_DIR}"/tmp/aws-user
-echo "us-east-1" > "${CURRENT_DIR}"/tmp/aws-user/region
-echo "database-bucket" > "${CURRENT_DIR}"/tmp/aws-user/database-bucket
-echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/accesskey
-echo "1234567890123456789012345678901234567890" > "${CURRENT_DIR}"/tmp/aws-user/secretkey
-
+s3Accesskey="1234567890123456789012345678901234567890"
+s3Secretkey="1234567890123456789012345678901234567890"
 # boot minio
 mkdir -p "${CURRENT_DIR}"/tmp/bin
-echo "ls /data/database-bucket/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
+echo "ls /data/database/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
 MINIO_JOB=$(docker run -d \
+  -e DRYCC_MINIO_ACCESSKEY=$s3Accesskey \
+  -e DRYCC_MINIO_SECRETKEY=$s3Secretkey \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
-  -v "${CURRENT_DIR}"/tmp/aws-user:/var/run/secrets/drycc/minio/creds \
   "${DEV_REGISTRY}"/drycc/minio:canary server /data/)
 
 puts-step "minio starting, wait 30s."
@@ -37,11 +34,16 @@ sleep 30
 
 # boot postgres, linking the minio container and setting DRYCC_MINIO_ENDPOINT
 MINIO_IP=$(docker inspect --format "{{ .NetworkSettings.IPAddress }}" "${MINIO_JOB}")
-PG_CMD="docker run -d --add-host minio:${MINIO_IP} -e PGCTLTIMEOUT=1200 \
-  -e BACKUP_FREQUENCY=1s -e DATABASE_STORAGE=minio \
-  -e DRYCC_MINIO_ENDPOINT=minio:9000 \
-  -v ${CURRENT_DIR}/tmp/creds:/var/run/secrets/drycc/database/creds \
-  -v ${CURRENT_DIR}/tmp/aws-user:/var/run/secrets/drycc/minio/creds $1"
+PG_CMD="docker run -d \
+  --add-host minio.local:${MINIO_IP} \
+  -e PGCTLTIMEOUT=1200 \
+  -e BACKUP_FREQUENCY=1s \
+  -e DATABASE_STORAGE=minio \
+  -e DRYCC_MINIO_LOOKUP=path \
+  -e DRYCC_MINIO_BUCKET=database \
+  -e DRYCC_MINIO_ENDPOINT=http://minio.local:9000 \
+  -e DRYCC_MINIO_ACCESSKEY=$s3Accesskey \
+  -e DRYCC_MINIO_SECRETKEY=$s3Secretkey $1"
 
 start-postgres "${PG_CMD}"
 
