@@ -5,7 +5,7 @@ dependencies:
     repository: https://charts.drycc.cc/stable
     version: 1.x.x
 home: https://github.com/drycc/postgres
-version: v1.0.0
+version: v1.1.0
 description: A PostgreSQL database used by Drycc Workflow.
 keywords:
   - database

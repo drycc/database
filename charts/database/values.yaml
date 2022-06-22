@@ -6,6 +6,25 @@ imageRegistry: "registry.drycc.cc"
 # limitsMemory: "50Mi"
 # limitsHugepages2Mi: 100Mi
 # limitsHugepages1Gi: 2Gi
+
+nodeAffinityPreset:
+  key: "drycc.cc/node"
+  type: "soft"
+  values:
+  - "true"
+
+podAffinityPreset:
+  key: "security"
+  type: ""
+  values:
+  - "drycc-security"
+
+podAntiAffinityPreset:
+  key: "app"
+  type: "soft"
+  values:
+  - "drycc-database"
+
 timeout: "1200"
 # Service
 service:
