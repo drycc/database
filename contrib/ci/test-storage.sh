@@ -3,7 +3,7 @@
 set -eof pipefail
 
 cleanup() {
-  kill-containers "${MINIO_JOB}" "${PG_JOB}"
+  kill-containers "${STORAGE_JOB}" "${PG_JOB}"
 }
 trap cleanup EXIT
 
@@ -16,46 +16,46 @@ CURRENT_DIR=$(cd "$(dirname "$0")"; pwd)
 
 create-postgres-creds
 
-puts-step "creating fake minio credentials"
+puts-step "creating fake storage credentials"
 
 s3Accesskey="1234567890123456789012345678901234567890"
 s3Secretkey="1234567890123456789012345678901234567890"
-# boot minio
+# boot storage
 mkdir -p "${CURRENT_DIR}"/tmp/bin
 echo "ls /data/database/*/basebackups_005" > "${CURRENT_DIR}"/tmp/bin/backups.sh
-MINIO_JOB=$(docker run -d \
-  -e DRYCC_MINIO_ACCESSKEY=$s3Accesskey \
-  -e DRYCC_MINIO_SECRETKEY=$s3Secretkey \
+STORAGE_JOB=$(docker run -d \
+  -e DRYCC_STORAGE_ACCESSKEY=$s3Accesskey \
+  -e DRYCC_STORAGE_SECRETKEY=$s3Secretkey \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
-  "${DEV_REGISTRY}"/drycc/minio:canary server /data/)
+  "${DEV_REGISTRY}"/drycc/storage:canary server /data/)
 
-puts-step "minio starting, wait 30s."
+puts-step "storage starting, wait 30s."
 sleep 30
 
-# boot postgres, linking the minio container and setting DRYCC_MINIO_ENDPOINT
-MINIO_IP=$(docker inspect --format "{{ .NetworkSettings.IPAddress }}" "${MINIO_JOB}")
+# boot postgres, linking the storage container and setting DRYCC_STORAGE_ENDPOINT
+STORAGE_IP=$(docker inspect --format "{{ .NetworkSettings.IPAddress }}" "${STORAGE_JOB}")
 PG_CMD="docker run -d \
-  --add-host minio.local:${MINIO_IP} \
+  --add-host storage.local:${STORAGE_IP} \
   -e PGCTLTIMEOUT=1200 \
   -e BACKUP_FREQUENCY=1s \
-  -e DATABASE_STORAGE=minio \
-  -e DRYCC_MINIO_LOOKUP=path \
-  -e DRYCC_MINIO_BUCKET=database \
-  -e DRYCC_MINIO_ENDPOINT=http://minio.local:9000 \
-  -e DRYCC_MINIO_ACCESSKEY=$s3Accesskey \
-  -e DRYCC_MINIO_SECRETKEY=$s3Secretkey $1"
+  -e DATABASE_STORAGE=storage \
+  -e DRYCC_STORAGE_LOOKUP=path \
+  -e DRYCC_STORAGE_BUCKET=database \
+  -e DRYCC_STORAGE_ENDPOINT=http://storage.local:9000 \
+  -e DRYCC_STORAGE_ACCESSKEY=$s3Accesskey \
+  -e DRYCC_STORAGE_SECRETKEY=$s3Secretkey $1"
 
 start-postgres "${PG_CMD}"
 
 # display logs for debugging purposes
-puts-step "displaying minio logs"
-docker logs "${MINIO_JOB}"
+puts-step "displaying storage logs"
+docker logs "${STORAGE_JOB}"
 
 check-postgres "${PG_JOB}"
 
-# check if minio has the 5 backups
-puts-step "checking if minio has 5 backups"
-BACKUPS="$(docker exec "${MINIO_JOB}" sh /tmp/bin/backups.sh | grep json)"
+# check if storage has the 5 backups
+puts-step "checking if storage has 5 backups"
+BACKUPS="$(docker exec "${STORAGE_JOB}" sh /tmp/bin/backups.sh | grep json)"
 
 NUM_BACKUPS="$(echo "${BACKUPS}" | wc -w)"
 # NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking

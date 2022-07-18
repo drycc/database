@@ -34,9 +34,9 @@ test: test-style test-functional
 test-style:
 	${DEV_ENV_CMD} shellcheck $(SHELL_SCRIPTS)
 
-test-functional: test-functional-minio
+test-functional: test-functional-storage
 
-test-functional-minio:
-	contrib/ci/test-minio.sh ${IMAGE}
+test-functional-storage:
+	contrib/ci/test-storage.sh ${IMAGE}
 
 .PHONY: all docker-build docker-push test
