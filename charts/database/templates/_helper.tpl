@@ -19,6 +19,11 @@ env:
     secretKeyRef:
       name: storage-creds
       key: lookup
+- name: "DRYCC_STORAGE_HEALTH"
+  valueFrom:
+    secretKeyRef:
+      name: storage-creds
+      key: health
 - name: "DRYCC_STORAGE_BUCKET"
   valueFrom:
     secretKeyRef:
