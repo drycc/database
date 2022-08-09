@@ -27,7 +27,7 @@ STORAGE_JOB=$(docker run -d \
   -e DRYCC_STORAGE_ACCESSKEY=$s3Accesskey \
   -e DRYCC_STORAGE_SECRETKEY=$s3Secretkey \
   -v "${CURRENT_DIR}"/tmp/bin:/tmp/bin \
-  "${DEV_REGISTRY}"/drycc/storage:canary server /data/)
+  "${DEV_REGISTRY}"/drycc/storage:canary minio server /data/)
 
 puts-step "storage starting, wait 30s."
 sleep 30

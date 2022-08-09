@@ -31,7 +31,7 @@ spec:
         args:
           - netcat
           - -v
-          - -u
+          - -g
           - $(DRYCC_STORAGE_HEALTH)
         {{- include "database.envs" . | indent 8 }}
       containers:
