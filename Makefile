@@ -9,7 +9,7 @@ PLATFORM ?= linux/amd64,linux/arm64
 
 include versioning.mk
 
-SHELL_SCRIPTS = $(wildcard _scripts/*.sh contrib/ci/*.sh rootfs/bin/*)
+SHELL_SCRIPTS = $(wildcard rootfs/usr/share/scripts/patroni/*)
 
 # The following variables describe the containerized development environment
 # and other build options
@@ -29,14 +29,9 @@ docker-build:
 docker-buildx:
 	docker buildx build --platform ${PLATFORM} -t ${IMAGE} . --push
 
-test: test-style test-functional
+test: test-style
 
 test-style:
 	${DEV_ENV_CMD} shellcheck $(SHELL_SCRIPTS)
-
-test-functional: test-functional-storage
-
-test-functional-storage:
-	contrib/ci/test-storage.sh ${IMAGE}
 
 .PHONY: all docker-build docker-push test
