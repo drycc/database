@@ -1,6 +1,6 @@
 {{- if eq .Values.global.databaseLocation "on-cluster" }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: drycc-database
   labels:
@@ -8,22 +8,24 @@ metadata:
   annotations:
     component.drycc.cc/version: {{ .Values.imageTag }}
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
+  replicas: {{ .Values.replicas }}
+  serviceName: drycc-database
   selector:
     matchLabels:
       app: drycc-database
+      cluster-name: drycc-database
   template:
     metadata:
       labels:
         app: drycc-database
+        cluster-name: drycc-database
     spec:
       affinity:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset.type "key" .Values.podAffinityPreset.key "values" .Values.podAffinityPreset.values ) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset.type "key" .Values.podAntiAffinityPreset.key "values" .Values.podAntiAffinityPreset.values ) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values ) | nindent 10 }}
-      serviceAccount: drycc-database
+      serviceAccountName: drycc-database
+      {{- if eq .Values.global.storageLocation "on-cluster" }}
       initContainers:
       - name: drycc-database-init
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/python-dev:latest
@@ -34,36 +36,71 @@ spec:
           - -g
           - $(DRYCC_STORAGE_HEALTH)
         {{- include "database.envs" . | indent 8 }}
+      {{- end }}
       containers:
       - name: drycc-database
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}
         imagePullPolicy: {{.Values.imagePullPolicy}}
         ports:
+        - containerPort: 8008
+          protocol: TCP
         - containerPort: 5432
+          protocol: TCP
         {{- include "database.limits" . | indent 8 }}
         {{- include "database.envs" . | indent 8 }}
         lifecycle:
           preStop:
             exec:
               command:
-              - init-stack
-              - gosu
-              - postgres
-              - do_backup
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  # switch leader pod if the current pod is the leader
+                  if curl --fail http://localhost:8008/read-write; then
+                    init-stack patronictl switchover --force
+                  fi
+        livenessProbe:
+          failureThreshold: 3                            
+          httpGet:       
+            path: /liveness
+            port: 8008
+            scheme: HTTP   
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         readinessProbe:
           exec:
             command:
-            - init-stack
-            - is_running
-          initialDelaySeconds: 30
-          timeoutSeconds: 1
-      {{- if .Values.persistence.enabled }}
+              - init-stack
+              - pg_isready
+              - -q
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         volumeMounts:
         - name: database-data
           mountPath: /data
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: database-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      {{- if .Values.persistence.storageClass }}
+      {{- if (eq "-" .Values.persistence.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+  {{- else }}
       volumes:
       - name: database-data
-        persistentVolumeClaim:
-          claimName: drycc-database
-      {{- end }}
+        emptyDir: {}
+  {{- end }}
 {{- end }}

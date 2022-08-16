@@ -7,6 +7,8 @@ imageRegistry: "registry.drycc.cc"
 # limitsHugepages2Mi: 100Mi
 # limitsHugepages1Gi: 2Gi
 
+replicas: 3
+
 nodeAffinityPreset:
   key: "drycc.cc/node"
   type: "soft"
@@ -25,6 +27,7 @@ podAntiAffinityPreset:
   values:
   - "drycc-database"
 
+debug: "false"
 timeout: "1200"
 # Service
 service:
@@ -33,7 +36,6 @@ service:
 # GCP PDs and EBS volumes are supported only
 persistence:
   enabled: false # Set to true to enable persistence
-  accessMode: ReadWriteOnce
   size: 5Gi # PVC size
   ## database data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
@@ -45,10 +47,27 @@ persistence:
   ## Storage class of PV to bind. By default it looks for standard storage class.
   ## If the PV uses a different storage class, specify that here.
   storageClass: ""
-  volumeName: ""
 # The username and password to be used by the on-cluster database.
 # If left empty they will be generated using randAlphaNum
-username: ""
+superuser: "postgres"
+superuserPassword: ""
+replicator: "standby"
+replicatorPassword: ""
+user: ""
 password: ""
-passportDatabaseName: "drycc_passport"
-controllerDatabaseName: "drycc_controller"
+
+global:
+  # Set the location of Workflow's Object Storage
+  #
+  # Valid values are:
+  # - on-cluster: Run drycc storage within the Kubernetes cluster
+  # - off-cluster: Run Storage outside the Kubernetes cluster (Compatible with s3 API)
+  storageLocation: "on-cluster"
+  # Set the location of Workflow's PostgreSQL database
+  #
+  # Valid values are:
+  # - on-cluster: Run PostgreSQL within the Kubernetes cluster (credentials are generated
+  #   automatically; backups are sent to object storage
+  #   configured above)
+  # - off-cluster: Run PostgreSQL outside the Kubernetes cluster
+  databaseLocation: "on-cluster"

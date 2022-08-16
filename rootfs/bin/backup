@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-export BACKUP_FREQUENCY=${BACKUP_FREQUENCY:-4h}
-
-while true; do
-    sleep "$BACKUP_FREQUENCY"
-    do_backup
-done
