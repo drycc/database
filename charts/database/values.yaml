@@ -48,7 +48,8 @@ persistence:
   ## If the PV uses a different storage class, specify that here.
   storageClass: ""
 # The username and password to be used by the on-cluster database.
-# If left empty they will be generated using randAlphaNum
+# If left empty they will be generated
+# The user name should be set to lowercase letters 
 superuser: "postgres"
 superuserPassword: ""
 replicator: "standby"

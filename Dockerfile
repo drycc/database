@@ -10,7 +10,8 @@ ENV PGDATA /data/${PG_MAJOR}
 
 RUN install-packages gcc \
   && install-stack python $PYTHON_VERSION \
-  && install-stack postgresql $POSTGRESQL_VERSION && . init-stack \
+  && install-stack postgresql $POSTGRESQL_VERSION \
+  && . init-stack \
   && set -eux; pip3 install --disable-pip-version-check --no-cache-dir psycopg[binary] patroni[kubernetes] 2>/dev/null; set +eux \
   && apt-get purge -y --auto-remove gcc \
   && apt-get autoremove -y \

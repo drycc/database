@@ -12,7 +12,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: postgres
-      port: 5432
+    - port: 5432
       targetPort: 5432
 {{- end }}
