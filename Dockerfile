@@ -2,9 +2,9 @@ FROM registry.drycc.cc/drycc/base:bullseye
 
 COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
-ENV PYTHON_VERSION="3.10.4" \
+ENV PYTHON_VERSION="3.10.6" \
   PG_MAJOR=14 \
-  POSTGRESQL_VERSION="14.2"
+  POSTGRESQL_VERSION="14.5"
 
 ENV PGDATA /data/${PG_MAJOR}
 
