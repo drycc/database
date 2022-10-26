@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: drycc-database
+  name: {{ printf "%s:drycc-database" .Release.Namespace | quote }}
 rules:
 - apiGroups:
   - ""
