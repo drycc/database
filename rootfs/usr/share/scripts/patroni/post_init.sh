@@ -5,10 +5,11 @@ if [[ ( -n "$DRYCC_DATABASE_USER") &&  ( -n "$DRYCC_DATABASE_PASSWORD")]]; then
   echo "Creating user ${DRYCC_DATABASE_USER}"
   psql "$1" -w -c "create user ${DRYCC_DATABASE_USER} WITH LOGIN ENCRYPTED PASSWORD '${DRYCC_DATABASE_PASSWORD}'"
 
-  echo "Creating passport and controller databases"
-  psql "$1" -w -c "CREATE DATABASE passport OWNER ${DRYCC_DATABASE_USER}"
-  psql "$1" -w -c "CREATE DATABASE controller OWNER ${DRYCC_DATABASE_USER}"
-
+  for dbname in ${DRYCC_DATABASE_INIT_NAMES//,/ }
+  do
+    echo "Creating database ${dbname}"
+    psql "$1" -w -c "CREATE DATABASE ${dbname} OWNER ${DRYCC_DATABASE_USER}"
+  done
 else
   echo "Skipping user creation"
   echo "Skipping database creation"

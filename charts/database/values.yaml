@@ -56,6 +56,7 @@ replicator: "standby"
 replicatorPassword: ""
 user: ""
 password: ""
+initDatabases: "controller,passport"
 
 global:
   # Set the location of Workflow's Object Storage

@@ -36,6 +36,8 @@ env:
   value: '0.0.0.0:5432'
 - name: PATRONI_RESTAPI_LISTEN
   value: '0.0.0.0:8008'
+- name: "DRYCC_DATABASE_INIT_NAMES"
+  value: "{{.Values.initDatabases}}"
 - name: DRYCC_DATABASE_SUPERUSER
   valueFrom:
     secretKeyRef:
