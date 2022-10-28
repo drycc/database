@@ -25,18 +25,6 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset.type "key" .Values.podAntiAffinityPreset.key "values" .Values.podAntiAffinityPreset.values ) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values ) | nindent 10 }}
       serviceAccountName: drycc-database
-      {{- if eq .Values.global.storageLocation "on-cluster" }}
-      initContainers:
-      - name: drycc-database-init
-        image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/python-dev:latest
-        imagePullPolicy: {{.Values.imagePullPolicy}}
-        args:
-          - netcat
-          - -v
-          - -g
-          - $(DRYCC_STORAGE_HEALTH)
-        {{- include "database.envs" . | indent 8 }}
-      {{- end }}
       containers:
       - name: drycc-database
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/postgres:{{.Values.imageTag}}

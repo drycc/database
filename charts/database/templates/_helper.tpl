@@ -68,13 +68,6 @@ env:
     secretKeyRef:
       name: database-creds
       key: password
-{{- if eq .Values.global.storageLocation "on-cluster" }}
-- name: "DRYCC_STORAGE_HEALTH"
-  valueFrom:
-    secretKeyRef:
-      name: storage-creds
-      key: health
-{{- end }}
 {{- end }}
 
 {{/* Generate database deployment limits */}}
