@@ -2,7 +2,7 @@
 # Some uses for short name:
 # - Docker image name
 # - Kubernetes service, rc, pod, secret, volume names
-SHORT_NAME := postgres
+SHORT_NAME := database
 DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 IMAGE_PREFIX ?= drycc
 PLATFORM ?= linux/amd64,linux/arm64
