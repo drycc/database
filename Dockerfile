@@ -1,10 +1,10 @@
-FROM registry.drycc.cc/drycc/base:bullseye
+FROM registry.drycc.cc/drycc/base:bookworm
 
 COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
-ENV PYTHON_VERSION="3.10.6" \
+ENV PYTHON_VERSION="3.11" \
   PG_MAJOR=14 \
-  POSTGRESQL_VERSION="14.5"
+  POSTGRESQL_VERSION="15.3"
 
 ENV PGDATA /data/${PG_MAJOR}
 
