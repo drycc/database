@@ -23,11 +23,11 @@ all: docker-build docker-push
 # For cases where we're building from local
 # We also alter the RC file to set the image name.
 docker-build:
-	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} .
+	docker build ${DOCKER_BUILD_FLAGS} --build-arg CODENAME=${CODENAME} -t ${IMAGE} .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 docker-buildx:
-	docker buildx build --platform ${PLATFORM} -t ${IMAGE} . --push
+	docker buildx build --build-arg CODENAME=${CODENAME} --platform ${PLATFORM} -t ${IMAGE} . --push
 
 test: test-style
 

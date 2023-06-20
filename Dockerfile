@@ -1,4 +1,5 @@
-FROM registry.drycc.cc/drycc/base:bookworm
+ARG CODENAME
+FROM registry.drycc.cc/drycc/base:${CODENAME}
 
 COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
