@@ -26,6 +26,9 @@ restapi:
   connect_address: '${PATRONI_KUBERNETES_POD_IP}:8008'
 postgresql:
   data_dir: '${PGDATA}'
+  parameters:
+    timescaledb.license: 'timescale'
+    shared_preload_libraries: 'auto_explain,timescaledb,pg_stat_statements'
   connect_address: '${PATRONI_KUBERNETES_POD_IP}:5432'
   authentication:
     superuser:

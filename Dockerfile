@@ -3,15 +3,15 @@ FROM registry.drycc.cc/drycc/base:${CODENAME}
 
 COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
-ENV PYTHON_VERSION="3.11" \
-  PG_MAJOR=14 \
-  POSTGRESQL_VERSION="15.3"
+ENV PG_MAJOR=15 \
+  PG_MINOR=3 \
+  PYTHON_VERSION="3.11"
 
 ENV PGDATA /data/${PG_MAJOR}
 
 RUN install-packages gcc \
   && install-stack python $PYTHON_VERSION \
-  && install-stack postgresql $POSTGRESQL_VERSION \
+  && install-stack postgresql $PG_MAJOR.$PG_MINOR \
   && . init-stack \
   && set -eux; pip3 install --disable-pip-version-check --no-cache-dir psycopg[binary] patroni[kubernetes] 2>/dev/null; set +eux \
   && apt-get purge -y --auto-remove gcc \
