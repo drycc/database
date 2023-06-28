@@ -7,7 +7,8 @@ ENV PG_MAJOR=15 \
   PG_MINOR=3 \
   PYTHON_VERSION="3.11"
 
-ENV PGDATA /data/${PG_MAJOR}
+ENV HOME /data
+ENV PGDATA $HOME/$PG_MAJOR
 
 RUN install-packages gcc \
   && install-stack python $PYTHON_VERSION \
@@ -33,7 +34,7 @@ RUN install-packages gcc \
   && mkdir -p /usr/share/man/man{1..8} \
   && mkdir -p $PGDATA \
   && groupadd postgres && useradd -g postgres postgres \
-  && chown -R postgres:postgres /data
+  && chown -R postgres:postgres $HOME
 
 USER postgres
 ENTRYPOINT ["init-stack", "/entrypoint.sh"]

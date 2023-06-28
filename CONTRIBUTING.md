@@ -1,5 +1,4 @@
-# How to Contribute
+# Contributing to Drycc
 
 This project is part of Drycc. You can find the latest contribution
-guidelines [at the Drycc project](https://github.com/drycc/drycc/blob/main/CONTRIBUTING.md).
-
+guidelines [in our documentation](https://www.drycc.cc/docs/workflow/contributing/overview/).
