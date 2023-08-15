@@ -16,16 +16,14 @@ nodeAffinityPreset:
   - "true"
 
 podAffinityPreset:
-  key: "security"
   type: ""
-  values:
-  - "drycc-security"
+  extraMatchLabels:
+    security: "drycc-security"
 
 podAntiAffinityPreset:
-  key: "app"
   type: "soft"
-  values:
-  - "drycc-database"
+  extraMatchLabels:
+    app: "drycc-database"
 
 debug: "false"
 timeout: "1200"
