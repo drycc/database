@@ -8,10 +8,6 @@ For more information about the Drycc Workflow, please visit the main project pag
 
 We welcome your input! If you have feedback, please submit an [issue][issues]. If you'd like to participate in development, please read the "Development" section below and submit a [pull request][prs].
 
-# About
-
-This component is a PostgreSQL database for use in Kubernetes. It builds on the official [postgres](https://registry.hub.docker.com/_/postgres/) Docker image. While it's intended for use inside of the Drycc Workflow open source [PaaS](https://en.wikipedia.org/wiki/Platform_as_a_service), it's flexible enough to be used as a standalone pod on any Kubernetes cluster or even as a standalone Docker container.
-
 # Development
 
 The Drycc project welcomes contributions from all developers. The high level process for development matches many other open source projects. See below for an outline.
@@ -27,7 +23,7 @@ The Drycc project welcomes contributions from all developers. The high level pro
 In order to develop and test this component in a Drycc cluster, you'll need the following:
 
 * [GNU Make](https://www.gnu.org/software/make/)
-* [Docker](https://www.docker.com/) installed, configured and running
+* [Podman](https://podman.io/) installed, configured and running
 * A working Kubernetes cluster and `kubectl` installed and configured to talk to the cluster
  * If you don't have this setup, please see [the Kubernetes documentation][k8s-docs]
 
@@ -39,27 +35,27 @@ If your feature or bugfix doesn't easily lend itself to unit/integration testing
 
 ### Dogfooding
 
-Finally, we encourage you to [dogfood](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) this component while you're writing code on it. To do so, you'll need to build and push Docker images with your changes.
+Finally, we encourage you to [dogfood](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) this component while you're writing code on it. To do so, you'll need to build and push Container images with your changes.
 
 This project has a [Makefile](https://github.com/drycc/postgres/blob/main/Makefile) that makes these tasks significantly easier. It requires the following environment variables to be set:
 
-* `DRYCC_REGISTRY` - A Docker registry that you have push access to and your Kubernetes cluster can pull from
+* `DRYCC_REGISTRY` - A Container registry that you have push access to and your Kubernetes cluster can pull from
   * If this is [Docker Hub](https://hub.docker.com/), leave this variable empty
   * Otherwise, ensure it has a trailing `/`
-* `IMAGE_PREFIX` - The organization in the Docker repository. This defaults to `drycc`, but if you don't have access to that organization, set this to one you have push access to.
+* `IMAGE_PREFIX` - The organization in the Container repository. This defaults to `drycc`, but if you don't have access to that organization, set this to one you have push access to.
 * `SHORT_NAME` (optional) - The name of the image. This defaults to `postgres`
-* `VERSION` (optional) - The tag of the Docker image. This defaults to the current Git SHA (the output of `git rev-parse --short HEAD`)
+* `VERSION` (optional) - The tag of the Container image. This defaults to the current Git SHA (the output of `git rev-parse --short HEAD`)
 
-Assuming you have these variables set correctly, run `make docker-build` to build the new image, and `make docker-push` to push it. Here is an example command that would push to `example.com/arschles/postgres:devel`:
+Assuming you have these variables set correctly, run `make podman-build` to build the new image, and `make podman-push` to push it. Here is an example command that would push to `example.com/arschles/postgres:devel`:
 
 ```console
 export DRYCC_REGISTRY=example.com/
 export IMAGE_PREFIX=arschles
 export VERSION=devel
-make docker-build docker-push
+make podman-build podman-push
 ```
 
-Note that you'll have to push your image to a Docker repository (`make docker-push`) in order for your Kubernetes cluster to pull the image. This is important for testing in your cluster.
+Note that you'll have to push your image to a Container repository (`make podman-push`) in order for your Kubernetes cluster to pull the image. This is important for testing in your cluster.
 
 
 [issues]: https://github.com/drycc/postgres/issues
