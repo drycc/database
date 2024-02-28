@@ -10,8 +10,14 @@ fi
 cat > /data/patroni.yaml <<__EOF__
 bootstrap:
   dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    failsafe_mode: true
     postgresql:
       use_pg_rewind: true
+      use_slots: true
   initdb:
   - auth-host: md5
   - auth-local: trust
@@ -29,6 +35,22 @@ postgresql:
   parameters:
     timescaledb.license: 'timescale'
     shared_preload_libraries: 'auto_explain,timescaledb,pg_stat_statements'
+    hot_standby: "on"
+    max_connections: 1005
+    max_worker_processes: 8
+    max_wal_senders: 10
+    max_replication_slots: 10
+    hot_standby_feedback: on
+    max_prepared_transactions: 0
+    max_locks_per_transaction: 64
+    wal_log_hints: "on"
+    track_commit_timestamp: "off"
+    archive_mode: "on"
+    archive_timeout: 300s
+    archive_command: "/bin/true"
+    log_min_duration_statement: 1000
+    log_lock_waits: on
+    log_statement: 'ddl' 
   connect_address: '${PATRONI_KUBERNETES_POD_IP}:5432'
   authentication:
     superuser:
