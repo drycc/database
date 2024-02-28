@@ -10,7 +10,7 @@ ENV PG_MAJOR=15 \
 ENV HOME /data
 ENV PGDATA $HOME/$PG_MAJOR
 
-RUN install-packages gcc \
+RUN install-packages vi gcc \
   && install-stack python $PYTHON_VERSION \
   && install-stack postgresql $PG_MAJOR.$PG_MINOR \
   && . init-stack \
