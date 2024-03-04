@@ -9,6 +9,21 @@ imageRegistry: "registry.drycc.cc"
 
 replicas: 3
 
+## Enable diagnostic mode
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Command to override all containers
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers
+  ##
+  args:
+    - infinity
+
 nodeAffinityPreset:
   key: "drycc.cc/node"
   type: "soft"

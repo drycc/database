@@ -29,6 +29,10 @@ spec:
       - name: drycc-database
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/database:{{.Values.imageTag}}
         imagePullPolicy: {{.Values.imagePullPolicy}}
+        {{- if .Values.diagnosticMode.enabled }}
+        command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 10 }}
+        args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 8008
           protocol: TCP
@@ -36,6 +40,7 @@ spec:
           protocol: TCP
         {{- include "database.limits" . | indent 8 }}
         {{- include "database.envs" . | indent 8 }}
+        {{- if not .Values.diagnosticMode.enabled }}
         lifecycle:
           preStop:
             exec:
@@ -67,6 +72,7 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+        {{- end }}
         volumeMounts:
         - name: database-data
           mountPath: /data
