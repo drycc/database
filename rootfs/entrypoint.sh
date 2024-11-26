@@ -33,8 +33,7 @@ restapi:
 postgresql:
   data_dir: '${PGDATA}'
   parameters:
-    timescaledb.license: 'timescale'
-    shared_preload_libraries: 'auto_explain,timescaledb,pg_stat_statements'
+    shared_preload_libraries: 'auto_explain,pg_stat_statements'
     hot_standby: "on"
     max_connections: 1005
     max_worker_processes: 8

@@ -69,8 +69,8 @@ replicator: "standby"
 replicatorPassword: ""
 user: ""
 password: ""
-initDatabases: "controller,passport,monitor"
-databaseExtensions: "postgis,timescaledb"
+initDatabases: "controller,passport"
+databaseExtensions: ""
 
 global:
   # Set the location of Workflow's Object Storage
