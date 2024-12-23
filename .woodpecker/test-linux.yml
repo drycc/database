@@ -12,9 +12,11 @@ steps:
   image: bash
   commands:
   - make test
-  secrets:
-  - codename
-  - dev_registry
+  environment:
+    CODENAME:
+      from_secret: codename
+    DEV_REGISTRY:
+      from_secret: dev_registry
   when:
     event:
     - push
