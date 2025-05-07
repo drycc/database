@@ -1,7 +1,5 @@
 {{- define "database.envs" }}
 env:
-- name: DATABASE_STORAGE
-  value: "{{.Values.global.storage}}"
 {{- if eq .Values.debug "true" }}
 - name: PATRONI_LOG_LEVEL
   value: DEBUG

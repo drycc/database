@@ -1,4 +1,3 @@
-{{- if eq .Values.global.databaseLocation "on-cluster" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,4 +13,3 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-{{- end }}

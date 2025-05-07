@@ -71,19 +71,3 @@ user: ""
 password: ""
 initDatabases: "controller,passport"
 databaseExtensions: ""
-
-global:
-  # Set the location of Workflow's Object Storage
-  #
-  # Valid values are:
-  # - on-cluster: Run drycc storage within the Kubernetes cluster
-  # - off-cluster: Run Storage outside the Kubernetes cluster (Compatible with s3 API)
-  storageLocation: "on-cluster"
-  # Set the location of Workflow's PostgreSQL database
-  #
-  # Valid values are:
-  # - on-cluster: Run PostgreSQL within the Kubernetes cluster (credentials are generated
-  #   automatically; backups are sent to object storage
-  #   configured above)
-  # - off-cluster: Run PostgreSQL outside the Kubernetes cluster
-  databaseLocation: "on-cluster"
