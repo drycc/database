@@ -2,10 +2,6 @@ imageOrg: "drycc"
 imagePullPolicy: "Always"
 imageTag: "canary"
 imageRegistry: "registry.drycc.cc"
-# limitsCpu: "100m"
-# limitsMemory: "50Mi"
-# limitsHugepages2Mi: 100Mi
-# limitsHugepages1Gi: 2Gi
 
 replicas: 3
 
@@ -23,6 +19,14 @@ diagnosticMode:
   ##
   args:
     - infinity
+
+resources: {}
+  # limits:
+  #   cpu: 200m
+  #   memory: 50Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 30Mi
 
 nodeAffinityPreset:
   key: "drycc.cc/node"
