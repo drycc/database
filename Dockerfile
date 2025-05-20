@@ -5,7 +5,8 @@ COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
 ENV PG_MAJOR=15 \
   PG_MINOR=8 \
-  PYTHON_VERSION="3.12"
+  PYTHON_VERSION="3.12" \
+  POSTGRES_EXPORTER_VERSION="0.17.1"
 
 ENV HOME /data
 ENV PGDATA $HOME/$PG_MAJOR
@@ -13,6 +14,7 @@ ENV PGDATA $HOME/$PG_MAJOR
 RUN install-packages vim gcc \
   && install-stack python $PYTHON_VERSION \
   && install-stack postgresql $PG_MAJOR.$PG_MINOR \
+  && install-stack postgres_exporter $POSTGRES_EXPORTER_VERSION \
   && . init-stack \
   && set -eux; pip3 install --disable-pip-version-check --no-cache-dir psycopg[binary] patroni[kubernetes] 2>/dev/null; set +eux \
   && apt-get purge -y --auto-remove gcc \

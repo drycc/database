@@ -15,6 +15,10 @@ spec:
       cluster-name: drycc-database
   template:
     metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9187"
+        prometheus.io/scrape: "true"
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app: drycc-database
         cluster-name: drycc-database
@@ -78,6 +82,60 @@ spec:
         volumeMounts:
         - name: database-data
           mountPath: /data
+      - name: drycc-database-metrics
+        image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/database:{{.Values.imageTag}}
+        imagePullPolicy: {{.Values.imagePullPolicy}}
+        {{- if .Values.diagnosticMode.enabled }}
+        command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 10 }}
+        args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 10 }}
+        {{- else }}
+        command:
+        - init-stack
+        args:
+        - postgres_exporter
+        {{- end }}
+        ports:
+        - containerPort: 9187
+          protocol: TCP
+        env:
+        - name: DATA_SOURCE_URI
+          value: "127.0.0.1:5432/postgres?sslmode=disable"
+        - name: DATA_SOURCE_USER
+          valueFrom:
+            secretKeyRef:
+              name: database-creds
+              key: user
+        - name: DATA_SOURCE_PASS
+          valueFrom:
+            secretKeyRef:
+              name: database-creds
+              key: password
+        startupProbe:
+          initialDelaySeconds: 10
+          tcpSocket:
+              port: 9187
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 15
+          successThreshold: 1
+        livenessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            path: /
+            port: 9187
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+          successThreshold: 1
+        readinessProbe:
+          initialDelaySeconds: 5
+          httpGet:
+            path: /
+            port: 9187
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+          successThreshold: 1
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:

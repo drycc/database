@@ -4,6 +4,7 @@ set -Eeu
 if [[ ( -n "$DRYCC_DATABASE_USER") &&  ( -n "$DRYCC_DATABASE_PASSWORD")]]; then
   echo "Creating user ${DRYCC_DATABASE_USER}"
   psql "$1" -w -c "create user ${DRYCC_DATABASE_USER} WITH LOGIN ENCRYPTED PASSWORD '${DRYCC_DATABASE_PASSWORD}'"
+  psql "$1" -w -c "GRANT pg_monitor TO ${DRYCC_DATABASE_USER}"
   for dbname in ${DRYCC_DATABASE_INIT_NAMES//,/ }
   do
     echo "Creating database ${dbname}"
