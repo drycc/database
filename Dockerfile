@@ -3,9 +3,9 @@ FROM registry.drycc.cc/drycc/base:${CODENAME}
 
 COPY rootfs/usr /usr/
 COPY rootfs/entrypoint.sh /entrypoint.sh
-ENV PG_MAJOR=15 \
-  PG_MINOR=8 \
-  PYTHON_VERSION="3.12" \
+ENV PG_MAJOR=17 \
+  PG_MINOR=6 \
+  PYTHON_VERSION="3.13" \
   POSTGRES_EXPORTER_VERSION="0.17.1"
 
 ENV HOME /data
