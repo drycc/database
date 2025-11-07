@@ -8,9 +8,9 @@ COPY rootfs/entrypoint.sh /entrypoint.sh
 ARG PYTHON_VERSION="3.13" \
   POSTGRES_EXPORTER_VERSION="0.17.1"
 
-ENV HOME /data \
-  PG_MAJOR=17 \
-  PG_MINOR=6
+ENV HOME=/data \
+  PG_MAJOR=18 \
+  PG_MINOR=0
 ENV PGDATA $HOME/$PG_MAJOR
 
 RUN install-packages vim gcc \
