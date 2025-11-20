@@ -10,7 +10,7 @@ ARG PYTHON_VERSION="3.13" \
 
 ENV HOME=/data \
   PG_MAJOR=18 \
-  PG_MINOR=0
+  PG_MINOR=1
 ENV PGDATA $HOME/$PG_MAJOR
 
 RUN install-packages vim gcc \
