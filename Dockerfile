@@ -6,7 +6,7 @@ COPY rootfs/entrypoint.sh /entrypoint.sh
 
 
 ARG PYTHON_VERSION="3.13" \
-  POSTGRES_EXPORTER_VERSION="0.17.1"
+  POSTGRES_EXPORTER_VERSION="0.18.1"
 
 ENV HOME=/data \
   PG_MAJOR=18 \
