@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [[ $UID -ge 10000 ]]; then
     GID=$(id -g)
     sed -e "s/^postgres:x:[^:]*:[^:]*:/postgres:x:$UID:$GID:/" /etc/passwd > /tmp/passwd
@@ -19,14 +18,14 @@ bootstrap:
       use_pg_rewind: true
       use_slots: true
   initdb:
-  - auth-host: md5
+  - auth-host: scram-sha-256
   - auth-local: trust
   - encoding: UTF8
   - locale: ${LANG}
   - data-checksums
   pg_hba:
-  - host all all 0.0.0.0/0 md5
-  - host replication ${DRYCC_DATABASE_REPLICATOR} ${PATRONI_KUBERNETES_POD_IP}/16 md5
+  - host all all 0.0.0.0/0 scram-sha-256
+  - host replication ${DRYCC_DATABASE_REPLICATOR} ${PATRONI_KUBERNETES_POD_IP}/16 scram-sha-256
   post_bootstrap: /usr/share/scripts/patroni/post_init.sh
 restapi:
   connect_address: '${PATRONI_KUBERNETES_POD_IP}:8008'
@@ -43,6 +42,7 @@ postgresql:
     max_prepared_transactions: 0
     max_locks_per_transaction: 64
     wal_log_hints: "on"
+    wal_level: logical
     track_commit_timestamp: "off"
     archive_mode: "on"
     archive_timeout: 300s
@@ -50,6 +50,7 @@ postgresql:
     log_min_duration_statement: 1000
     log_lock_waits: on
     log_statement: 'ddl' 
+    jit: off
   connect_address: '${PATRONI_KUBERNETES_POD_IP}:5432'
   authentication:
     superuser:

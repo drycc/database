@@ -1,2 +1,4 @@
 contrib/ci/tmp
 .vscode/
+charts/database/Chart.lock
+charts/database/charts/

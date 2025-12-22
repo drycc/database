@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+mkdir -p ~/.config/rclone
+touch ~/.config/rclone/rclone.conf
+rclone config create storage s3 \
+  provider=Other \
+  access_key_id="${DRYCC_STORAGE_ACCESSKEY}" \
+  secret_access_key="${DRYCC_STORAGE_SECRETKEY}" \
+  endpoint="${DRYCC_STORAGE_ENDPOINT}" \
+  force_path_style="${DRYCC_STORAGE_PATH_STYLE:-true}" --no-output
+
+if ! rclone lsd storage: > /dev/null 2>&1; then
+  sleep 9s
+  echo "waiting for object storage to become ready..."
+fi
+
+rclone mkdir "storage:${DRYCC_STORAGE_BUCKET}"

@@ -45,7 +45,24 @@ podAntiAffinityPreset:
     app: "drycc-database"
 
 debug: "false"
+# Patroni pg_ctl timeout
 timeout: "1200"
+
+# The following parameters will no longer use the built-in storage component.
+storageBucket: "database"
+storageEndpoint: ""
+storageAccesskey: ""
+storageSecretkey: ""
+storagePathStyle: "true"
+
+storage:
+  enabled: true
+
+cronjob:
+  enabled: true
+  scheduleCronJob: "0 3 * * *"
+  retainBackupsAge: 30d
+
 # Service
 service:
   # Provide any additional service annotations
@@ -66,7 +83,7 @@ persistence:
   storageClass: ""
 # The username and password to be used by the on-cluster database.
 # If left empty they will be generated
-# The user name should be set to lowercase letters 
+# The user name should be set to lowercase letters
 superuser: "postgres"
 superuserPassword: ""
 replicator: "standby"

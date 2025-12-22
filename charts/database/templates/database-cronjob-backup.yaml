@@ -1,0 +1,29 @@
+{{- if .Values.cronjob.enabled }}
+apiVersion: {{ include "common.capabilities.cronjob.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: drycc-database-cronjob-backup
+  labels:
+    heritage: drycc
+  annotations:
+    component.drycc.cc/version: {{ .Values.imageTag }}
+
+spec:
+  schedule: "{{ .Values.cronjob.scheduleCronJob }}"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure              
+          containers:         
+          - name: drycc-database-cronjob-backup
+            image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/database:{{.Values.imageTag}}
+            imagePullPolicy: {{.Values.imagePullPolicy}}
+            command:
+            - init-stack
+            args:  
+            - /usr/share/scripts/backup.sh
+            {{- include "database.envs" . | indent 12 }}
+{{- end -}}

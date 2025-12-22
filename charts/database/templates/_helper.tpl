@@ -1,5 +1,51 @@
 {{- define "database.envs" }}
 env:
+- name: RETAIN_BACKUPS_AGE
+  value: "{{.Values.cronjob.retainBackupsAge}}"
+{{- if (.Values.storageEndpoint) }}
+- name: "DRYCC_STORAGE_BUCKET"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: storage-bucket
+- name: "DRYCC_STORAGE_ENDPOINT"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: storage-endpoint
+- name: "DRYCC_STORAGE_ACCESSKEY"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: storage-accesskey
+- name: "DRYCC_STORAGE_SECRETKEY"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: storage-secretkey
+- name: "DRYCC_STORAGE_PATH_STYLE"
+  valueFrom:
+    secretKeyRef:
+      name: database-creds
+      key: storage-path-style
+{{- else if .Values.storage.enabled  }}
+- name: "DRYCC_STORAGE_BUCKET"
+  value: "database"
+- name: "DRYCC_STORAGE_ENDPOINT"
+  value: http://drycc-storage:9000
+- name: "DRYCC_STORAGE_ACCESSKEY"
+  valueFrom:
+    secretKeyRef:
+      name: storage-creds
+      key: accesskey
+- name: "DRYCC_STORAGE_SECRETKEY"
+  valueFrom:
+    secretKeyRef:
+      name: storage-creds
+      key: secretkey
+- name: "DRYCC_STORAGE_PATH_STYLE"
+  value: "true"
+{{- end }}
 {{- if eq .Values.debug "true" }}
 - name: PATRONI_LOG_LEVEL
   value: DEBUG

@@ -10,12 +10,15 @@ ARG PYTHON_VERSION="3.13" \
 
 ENV HOME=/data \
   PG_MAJOR=18 \
-  PG_MINOR=1
-ENV PGDATA $HOME/$PG_MAJOR
+  PG_MINOR=1 \
+  S3_RCLONE_VERSION="1.71.1" 
 
-RUN install-packages vim gcc \
+ENV PGDATA=$HOME/$PG_MAJOR
+
+RUN install-packages vim gcc pigz jq\
   && install-stack python $PYTHON_VERSION \
   && install-stack postgresql $PG_MAJOR.$PG_MINOR \
+  && install-stack rclone $S3_RCLONE_VERSION \
   && install-stack postgres_exporter $POSTGRES_EXPORTER_VERSION \
   && . init-stack \
   && set -eux; pip3 install --disable-pip-version-check --no-cache-dir psycopg[binary] patroni[kubernetes] 2>/dev/null; set +eux \
@@ -23,18 +26,18 @@ RUN install-packages vim gcc \
   && apt-get autoremove -y \
   && apt-get clean -y \
   && rm -rf \
-    /usr/share/doc \
-    /usr/share/man \
-    /usr/share/info \
-    /usr/share/locale \
-    /var/lib/apt/lists/* \
-    /var/log/* \
-    /var/cache/debconf/* \
-    /etc/systemd \
-    /lib/lsb \
-    /lib/udev \
-    /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/IBM* \
-    /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/EBC* \
+  /usr/share/doc \
+  /usr/share/man \
+  /usr/share/info \
+  /usr/share/locale \
+  /var/lib/apt/lists/* \
+  /var/log/* \
+  /var/cache/debconf/* \
+  /etc/systemd \
+  /lib/lsb \
+  /lib/udev \
+  /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/IBM* \
+  /usr/lib/`echo $(uname -m)`-linux-gnu/gconv/EBC* \
   && mkdir -p /usr/share/man/man{1..8} \
   && mkdir -p $PGDATA \
   && groupadd postgres && useradd -g postgres postgres \
