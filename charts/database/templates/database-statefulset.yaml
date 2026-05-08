@@ -27,6 +27,10 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset.type "component" "" "extraMatchLabels" .Values.podAffinityPreset.extraMatchLabels "topologyKey" "" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset.type "component" "" "extraMatchLabels" .Values.podAntiAffinityPreset.extraMatchLabels "topologyKey" "" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values ) | nindent 10 }}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsUser: 1000
       serviceAccountName: drycc-database
       containers:
       - name: drycc-database
