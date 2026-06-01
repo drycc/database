@@ -6,6 +6,9 @@ if [[ $UID -ge 10000 ]]; then
     rm /tmp/passwd
 fi
 
+chmod u+rwx "$PGDATA" || echo "Warning: Lack of permissions on data directory!"
+chmod go-rwx "$PGDATA" || echo "Warning: Lack of permissions on data directory!"
+
 cat > /data/patroni.yaml <<__EOF__
 bootstrap:
   dcs:
